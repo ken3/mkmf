@@ -1,3 +1,6 @@
+#ifndef _MKMF_H_INCLUDED
+#define _MKMF_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991, 1993 Peter J. Nicklin.
  * Copyright (c) 1991, 1993 Version Technology.
@@ -40,6 +43,12 @@
  *
  * Author: Peter J. Nicklin
  */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "slist.h"
+#include "hash.h"
+#include "target.h"
 
 /*
  * Buffer sizes
@@ -159,3 +168,50 @@
 #  define INSTALLDIR	"/usr/contrib"
 #endif
 #define MKMFLIB		"lib/mkmf"
+
+void warn(char*);
+void warns(char*, char*);
+void warn2(char*, char*, char*);
+void badopt(char, char);
+void usage(char*);
+void nocore(void);
+int  storedynmacro(void);
+int  storenvmacro(void);
+int  buftolist(char*, SLIST*);
+int  buildliblist(void);
+int  buildsrclist(void);
+int  expandlibpath(char*, char*, SLIST*);
+int  libbuftolist(char*, SLIST*, SLIST*);
+int  read_dir(char*, int (*)(), int, int);
+int  uniqsrclist(void);
+int  initsysinclude(void);
+int  findinclude(char*, char*, char*, int);
+int  getinclude(char*, char*, int, FILE*);
+int  hthash(char*, HASH*);
+int  storemacro(char*);
+int  fastcopy(char*, FILE*);
+void pperror(char*);
+int  findmf(char*, char*, TARGET*);
+int  putobj(char*, FILE*);
+int  readmf(char*, TARGET*);
+int  mksrclist(int, int);
+int  addsrclist(char*, char*, int);
+char *pathcat(char*, char*, char*);
+int  mksymlink(int, int);
+char *pathhead(char*);
+int  applyrule(char*, char*);
+int  buildruletable(void);
+int  instalrule(char*);
+int  lookuprule(char*);
+int  storerule(char*);
+int  slsort(int (*)(), SLIST*);
+int  buildsfxtable(void);
+int  mapsuffixtokey(char*);
+int  installsfx(char*, int, char*);
+int  lookuptypeofinclude(char*);
+int  lookupsfx(char*);
+int  sfxbuftotable(char*);
+
+
+#endif /* _MKMF_H_INCLUDED */
+

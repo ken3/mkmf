@@ -70,7 +70,6 @@ editmf(mfname, mfpath)
 	extern HASH *MDEFTABLE;		/* macro definition table */
 	char *findmacro();		/* is the line a macro definition? */
 	char *getlin();			/* get a line from input stream */
-	char *mktemp();			/* make file name */
 	char mnam[MACRONAMSIZE];	/* macro name buffer */
 	DLIST *dlp;			/* dependency list */
 	DLIST *mkdepend();		/* generate object-include file deps */
@@ -88,7 +87,7 @@ editmf(mfname, mfpath)
 	void putslmacro();		/* put macro defs from linked list */
 
 	ifp = mustfopen(mfpath, "r");
-	mktemp(Mftemp);
+	mkstemp(Mftemp);
 
 	if (signal(SIGINT, SIG_IGN) != SIG_IGN)
 		{

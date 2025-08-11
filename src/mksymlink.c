@@ -89,7 +89,7 @@ static struct stat CURDIRSTAT;		/* current directory status */
  * to directory a, and issue a warning that f.c is linked to a file in an
  * external directory.
  */
-mksymlink(needsrc, needhdr)
+int mksymlink(needsrc, needhdr)
 	int needsrc;			/* need source file names */
 	int needhdr;			/* need header file names */
 {

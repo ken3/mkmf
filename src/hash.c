@@ -38,6 +38,7 @@
  *
  * Author: Peter J. Nicklin
  */
+#include "Mkmf.h"
 #include "null.h"
 #include "hash.h"
 #include "macro.h"
@@ -46,8 +47,8 @@
 /*
  * hthash() returns a hash value for string, s.
  */
-hthash(s, hash)
-	register char *s;		/* string */
+int hthash(s, hash)
+	char *s;		/* string */
 	HASH *hash;			/* hash table */
 {
 	register int hashval;		/* hash value for string */
@@ -67,8 +68,6 @@ HASH *
 htinit(hashsiz)
 	unsigned int hashsiz;		/* hash table size */
 {
-	char *malloc();			/* allocate memory */
-	char *calloc();			/* allocate and zero memory */
 	HASH *ht;			/* pointer to hash table struct */
 	HASHBLK **pt;			/* pointer to hash pointer table */
 
@@ -100,7 +99,6 @@ htinstall(key, def, val, hash)
 	int val;			/* integer value */
 	HASH *hash;			/* hash table */
 {
-	char *malloc();			/* memory allocator */
 	char *strsav();			/* save string somewhere */
 	HASHBLK *htb;			/* hash table entry block */
 	HASHBLK *htlookup();		/* find hash table entry */

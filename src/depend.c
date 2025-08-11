@@ -40,6 +40,7 @@
  */
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
 #include "Mkmf.h"
 #include "config.h"
 #include "dlist.h"
@@ -162,7 +163,7 @@ addincdir()
 #define ISYSINCLUDE(f) (strncmp(f, SYSINCLUDE, SYSINCLUDELEN) == 0)
 #define INCLUDETYPE(f) (LOCALDIR(f) ? INTERNAL : (ISYSINCLUDE(f) ? SYSTEM : EXTERNAL))
 
-findinclude(incpath, incname, lastname, type)
+int findinclude(incpath, incname, lastname, type)
 	char *incpath;			/* pathname receiving buffer */
 	register char *incname;		/* include file name */
 	char *lastname;			/* file that includes incname */
@@ -290,7 +291,7 @@ getI(mnam, mdef, slist)
  * distinguish it from an include file in a local directory. Returns
  * NO if syntax error, otherwise YES.
  */
-getinclude(incname, curname, lineno, ifp)
+int getinclude(incname, curname, lineno, ifp)
 	char *curname;			/* current file name */
 	char *incname;			/* include file name receiving buffer */
 	int lineno;			/* current line number */
@@ -342,7 +343,6 @@ INCBLK *
 inclink(htb)
 	HASHBLK *htb;			/* hash table block pointer to save */
 {
-	char *malloc();			/* memory allocator */
 	INCBLK *iblk;			/* pointer to new include chain block */
 	int cleanup();			/* remove temporary makefile and exit */
 
@@ -890,7 +890,7 @@ nextline:	while (c != '\n' && c != EOF)
 	return(i_head);
 }
 
-initsysinclude()
+int initsysinclude(void)
 {
 	HASHBLK *htb;			/* hash table entry block */
 	HASHBLK *htlookup();		/* find hash table entry */

@@ -65,7 +65,7 @@ static struct stat CURDIRSTAT;		/* current directory status */
  * from the current directory and directories listed in VPATH.
  * Return YES if successful, otherwise NO.
  */
-mksrclist(needsrc, needhdr)
+int mksrclist(needsrc, needhdr)
 	int needsrc;			/* need source file names */
 	int needhdr;			/* need header file names */
 {
@@ -150,7 +150,7 @@ mksrclist(needsrc, needhdr)
  * addsrclist() adds a file to a source/header file list. Returns YES if
  * successful, otherwise NO.
  */
-addsrclist(dirname, filename, lswitch)
+int addsrclist(dirname, filename, lswitch)
 	char *dirname;			/* directory name */
 	char *filename;			/* file name to add to source list */
 	int lswitch;			/* source/header list switch */

@@ -43,6 +43,7 @@
  * strsav() saves a string somewhere and returns a pointer to the somewhere.
  * Returns NULL on error.
  */
+#include "Mkmf.h"
 #include "null.h"
 #include "stringx.h"
 
@@ -51,7 +52,6 @@ strsav(s)
 	char *s;
 {
 	char *sptr;			/* somewhere string pointer */
-	char *malloc();			/* memory allocator */
 
 	if ((sptr = malloc((unsigned)(strlen(s)+1))) == NULL)
 		return(NULL);

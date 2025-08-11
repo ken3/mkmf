@@ -67,7 +67,6 @@ dlappend(srctyp, srcblk, incblk, dlist)
 	INCBLK *incblk;			/* included file dependency chain */
 	DLIST *dlist;			/* pointer to list head block */
 {
-	char *malloc();			/* memory allocator */
 	DLBLK *dblk;			/* pointer to dependency list block */
 
 	if (dlist == NULL)
@@ -100,7 +99,6 @@ dlappend(srctyp, srcblk, incblk, dlist)
 DLIST *
 dlinit()
 {
-	char *malloc();			/* memory allocator */
 	DLIST *dlist;			/* pointer to list head block */
 
 	if ((dlist = (DLIST *) malloc(sizeof(DLIST))) == NULL)

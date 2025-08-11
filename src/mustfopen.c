@@ -44,6 +44,7 @@
  * cannot be accessed, exit(1) is called.
  */
 #include <stdio.h>
+#include "Mkmf.h"
 
 extern char *PGN;		/* program name */
 

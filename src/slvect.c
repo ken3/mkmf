@@ -41,6 +41,7 @@
  * otherwise NULL if no items in list or out of memory.
  */
 #include <stdio.h>
+#include "Mkmf.h"
 #include "null.h"
 #include "slist.h"
 
@@ -48,7 +49,6 @@ SLBLK **
 slvect(slist)
 	SLIST *slist;			/* pointer to list head block */
 {
-	char *malloc();			/* memory allocator */
 	SLBLK **vp;			/* pointer to block pointer array */
 	SLBLK **svp;			/* ptr to start of block ptr array */
 	SLBLK *cblk;			/* current list block */

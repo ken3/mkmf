@@ -61,6 +61,11 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #if defined(hpux) || defined(__hpux)
 #  define _HasRename
 #  define _HasStrDcl

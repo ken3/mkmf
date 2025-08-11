@@ -1,3 +1,6 @@
+#ifndef _TARGET_H_INCLUDED
+#define _TARGET_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -49,3 +52,5 @@ typedef struct _target
 	int type;			/* prog, lib, or other target type */
 	int dest;			/* target destination flag */
 	} TARGET;
+#endif /* _TARGET_H_INCLUDED */
+

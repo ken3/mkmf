@@ -44,13 +44,13 @@
  * pointer if out of memory.
  */
 #include <stdio.h>
+#include "Mkmf.h"
 #include "null.h"
 #include "slist.h"
 
 SLIST *
 slinit()
 {
-	char *malloc();			/* memory allocator */
 	SLIST *slist;			/* pointer to list head block */
 
 	if ((slist = (SLIST *) malloc(sizeof(SLIST))) == NULL)

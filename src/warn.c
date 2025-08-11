@@ -47,12 +47,13 @@ extern char *PGN;			/* program name */
  * warn() places an error message on the standard error output stream
  * stderr.
  */
-warn(m)
+void warn(m)
 	char *m;			/* warning message */
 {
 	if (PGN != NULL && *PGN != '\0')
 		fprintf(stderr, "%s: ", PGN);
 	fprintf(stderr, "%s\n", m);
+	return;
 }
 
 
@@ -61,7 +62,7 @@ warn(m)
  * warns() places an error message and a string argument on the
  * standard error output stream stderr.
  */
-warns(m, s)
+void warns(m, s)
 	char *m;			/* warning message */
 	char *s;			/* string argument */
 {
@@ -77,7 +78,7 @@ warns(m, s)
  * warn2() places an error message and 2 string arguments on the
  * standard error output stream stderr.
  */
-warn2(m, s1, s2)
+void warn2(m, s1, s2)
 	char *m;			/* warning message */
 	char *s1;			/* string argument */
 	char *s2;			/* string argument */

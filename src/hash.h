@@ -1,3 +1,6 @@
+#ifndef _HASH_H_INCLUDED
+#define _HASH_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -89,3 +92,5 @@ extern HASHBLK *htinstall();		/* install hash table entry */
 extern HASHBLK *htlookup();		/* find hash table entry */
 extern void htrewind();			/* rewind hash table to first block */
 extern void htrm();			/* remove hash table entry */
+#endif /* _HASH_H_INCLUDED */
+

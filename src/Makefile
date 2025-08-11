@@ -177,7 +177,7 @@ install:	$(PROGRAM)
 		@-strip $(PROGRAM)
 		@if [ $(DEST) != . ]; then \
 		(rm -f $(DEST)/$(PROGRAM); $(INSTALL) $(PROGRAM) $(DEST)); fi
-		$(INSTALL) mkmf.man $(DESTDIR)$(INSTALLDIR)/man/man1/mkmf.1
+		$(INSTALL) mkmf.man $(DESTDIR)$(INSTALLDIR)/share/man/man1/mkmf.1
 
 print:;		@$(PRINT) $(HDRS) $(SRCS)
 

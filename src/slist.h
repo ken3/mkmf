@@ -1,3 +1,6 @@
+#ifndef _SLIST_H_INCLUDED
+#define _SLIST_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -73,3 +76,6 @@ extern void slrm();			/* remove list item */
 extern int slsort();			/* sort list */
 extern SLBLK **slvect();		/* make linked list vector */
 extern void slvtol();			/* convert vector to linked list */
+
+#endif /* _SLIST_H_INCLUDED */
+

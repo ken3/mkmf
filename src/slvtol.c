@@ -41,6 +41,7 @@
  * The vector is assumed to be the same length as the original list.
  */
 #include <stdio.h>
+#include "Mkmf.h"
 #include "null.h"
 #include "slist.h"
 

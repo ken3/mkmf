@@ -45,6 +45,7 @@
  * the somewhere, or a null pointer if out of memory.
  */
 #include <stdio.h>
+#include "Mkmf.h"
 #include "macro.h"
 #include "null.h"
 #include "slist.h"
@@ -55,7 +56,6 @@ slappend(key, slist)
 	char *key;			/* key string */
 	SLIST *slist;			/* pointer to list head block */
 {
-	char *malloc();			/* memory allocator */
 	SLBLK *slbptr;			/* pointer to list block */
 	unsigned int klen;		/* key length */
 

@@ -45,7 +45,7 @@
  */
 #include <stdio.h>
 
-pperror(message)
+void pperror(message)
 	char *message;			/* error message */
 {
 	extern char *PGN;		/* program name */

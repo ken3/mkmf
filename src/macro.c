@@ -233,7 +233,7 @@ putslmacro(slist, stream)
  * Returns integer YES if a macro definition (macro=definition), otherwise
  * NO. exit(1) is called if out of memory.
  */
-storemacro(macdef)
+int storemacro(macdef)
 	char *macdef;			/* macro definition string */
 {
 	register int i;			/* macro value index */
@@ -265,7 +265,7 @@ storemacro(macdef)
  * though they were macros. Returns YES if successful, otherwise
  * NO.
  */
-storenvmacro()
+int storenvmacro(void)
 {
 	extern char **environ;		/* user environment */
 	register char **ep;		/* environment pointer */
@@ -303,7 +303,7 @@ storenvmacro()
  * This prevents environment variables with the same names from being
  * loaded into the macro definition table unnecessarily.
  */
-storedynmacro()
+int storedynmacro(void)
 {
 	if (htlookup(MHEADERS, MDEFTABLE) == NULL)
 		if (htinstall(MHEADERS, "", VDYNAMIC, MDEFTABLE) == NULL)

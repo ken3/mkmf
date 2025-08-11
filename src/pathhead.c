@@ -48,7 +48,7 @@
 
 char *
 pathhead(pathname)
-	register char *pathname;
+	char *pathname;
 {
 	register char *ls;		/* last separator character */
 	register char *p;		/* pathname pointer */

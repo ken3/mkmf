@@ -56,7 +56,7 @@ static SFXBLK *SFX2[SFXTABSIZE];	/* 2+ character suffixes */
  * buildsfxtable() converts a suffix list into a hash table for fast lookup.
  * Returns YES if successful, otherwise NO.
  */
-buildsfxtable()
+int buildsfxtable(void)
 {
 	extern HASH *MDEFTABLE;		/* macro definition table */
 	extern SUFFIX DEFSFX[];		/* default suffix list */
@@ -90,12 +90,11 @@ buildsfxtable()
  * included file type is updated. Returns integer YES if successful,
  * otherwise NO.
  */
-installsfx(suffix, sfxtyp, incspec)
+int installsfx(suffix, sfxtyp, incspec)
 	char *suffix;			/* suffix string */
 	int sfxtyp;			/* suffix type */
 	char *incspec;			/* user spec for include file */
 {
-	char *malloc();			/* memory allocator */
 	char *strsav();			/* save a string somewhere */
 	int sfxindex;			/* index into suffix tables */
 	int mapsuffixkey();		/* convert suffix spec to index key */ 
@@ -128,7 +127,7 @@ installsfx(suffix, sfxtyp, incspec)
  * mapsuffixtokey() translates a user-specified include file type string
  * into an internal integer definition. Returns the integer definition.
  */
-mapsuffixtokey(spec)
+int mapsuffixtokey(spec)
 	char *spec;			/* user spec for include file */
 {
 	extern MAPINCLUDE INCKEY[];	/* default suffix list */
@@ -150,7 +149,7 @@ mapsuffixtokey(spec)
  * lookuptypeofinclude() returns the include file type for suffix, or 0 if
  * unknown suffix.
  */
-lookuptypeofinclude(suffix)
+int lookuptypeofinclude(suffix)
 	char *suffix;			/* suffix string */
 {
 	SFXBLK *sfxblk;			/* suffix block pointer */
@@ -169,7 +168,7 @@ lookuptypeofinclude(suffix)
 /*
  * lookupsfx() returns the suffix type, or 0 if unknown suffix.
  */
-lookupsfx(suffix)
+int lookupsfx(suffix)
 	char *suffix;			/* suffix string */
 {
 	SFXBLK *sfxblk;			/* suffix block pointer */
@@ -203,7 +202,7 @@ lookupsfx(suffix)
  * If the suffix is object file type, the OBJSFX default object suffix
  * is modified accordingly. Returns YES if successful, otherwise NO.
  */
-sfxbuftotable(sfxbuf)
+int sfxbuftotable(sfxbuf)
 	char *sfxbuf;			/* buffer containing suffixes */
 {
 	extern char OBJSFX[];		/* object file name suffix */

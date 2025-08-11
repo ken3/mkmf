@@ -39,6 +39,7 @@
  * Author: Peter J. Nicklin
  */
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -60,7 +61,7 @@ extern SLIST *SRCLIST;			/* source file name list */
  * buftolist() copies the items from a buffer to a singly-linked list.
  * Returns integer YES if successful, otherwise NO.
  */
-buftolist(buf, list)
+int buftolist(buf, list)
 	char *buf;			/* item buffer */
 	SLIST *list;			/* receiving list */
 {
@@ -84,7 +85,7 @@ buftolist(buf, list)
  * may be specified as `-lx'. Returns integer YES if successful,
  * otherwise NO.
  */
-buildliblist()
+int buildliblist(void)
 {
 	char *getpath();		/* get next path */
 	char *getoption();		/* get library path option */
@@ -158,7 +159,7 @@ buildliblist()
  * or header file name lists as appropriate. Returns integer YES if
  * successful, otherwise NO.
  */
-buildsrclist()
+int buildsrclist(void)
 {
 	extern HASH *MDEFTABLE;		/* macro definition table */
 	extern int MKSYMLINK;		/* make symbolic links to current dir ?*/
@@ -224,7 +225,7 @@ buildsrclist()
  * pathname. Directories are searched for the library in the form libx.a.
  * An integer YES is returned if the library was found, otherwise NO.
  */
-expandlibpath(libtoken, libpath, libpathlist)
+int expandlibpath(libtoken, libpath, libpathlist)
 	char *libtoken;			/* library file option */
 	char *libpath;			/* library pathname */
 	SLIST *libpathlist;		/* library directory search path */
@@ -253,7 +254,7 @@ expandlibpath(libtoken, libpath, libpathlist)
  * libbuftolist() appends each library pathname specified in libbuf to
  * the liblist library pathname list.
  */
-libbuftolist(libmacrobuf, libpathlist, liblist)
+int libbuftolist(libmacrobuf, libpathlist, liblist)
 	char *libmacrobuf;		/* LIBS macro definition buffer */
 	SLIST *libpathlist;		/* library directory search path */
 	SLIST *liblist;			/* library pathname list */
@@ -292,7 +293,7 @@ libbuftolist(libmacrobuf, libpathlist, liblist)
  * to the source or header file name lists as appropriate. Returns
  * integer YES if successful, otherwise NO.
  */
-read_dir(dirname, addfile, needsrc, needhdr)
+int read_dir(dirname, addfile, needsrc, needhdr)
 	char *dirname;			/* specified directory name */
 	int (*addfile)();		/* function for adding source files */
 	int needsrc;			/* need source file names */
@@ -312,7 +313,7 @@ read_dir(dirname, addfile, needsrc, needhdr)
 		}
 	for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp))
 		{
-		if ((suffix = (int)strrchr(dp->d_name, '.')) == 0 ||
+		if ((suffix = (char*)strrchr(dp->d_name, '.')) == 0 ||
 		    (*dp->d_name == '.' && AFLAG == NO) ||
 		    (*dp->d_name == '#'))
 			continue;
@@ -351,13 +352,13 @@ read_dir(dirname, addfile, needsrc, needhdr)
  * in the same list. Returns NO if no source list or out of memory,
  * otherwise YES.
  */
-uniqsrclist()
+int uniqsrclist(void)
 {
 	extern SLIST *SRCLIST;		/* source file name list */
 	register int cbi;		/* current block vector index */
 	register int fbi;		/* first matching block vector index */
 	register int lbi;		/* last block vector index */
-	int length;			/* source file basename length */
+	uintptr_t length;		/* source file basename length */
 	SLBLK **slvect();		/* make linked list vector */
 	SLBLK **slv;			/* ptr to singly-linked list vector */
 	void slvtol();			/* convert vector to linked list */
@@ -368,7 +369,7 @@ uniqsrclist()
 	lbi = SLNUM(SRCLIST) - 1;
 	for (fbi=0, cbi=1; cbi <= lbi; cbi++)
 		{
-		length = (int)strrchr(slv[cbi]->key, '.') - (int)slv[cbi]->key + 1;
+		length = (uintptr_t)strrchr(slv[cbi]->key, '.') - (uintptr_t)slv[cbi]->key + 1;
 		if (strncmp(slv[fbi]->key, slv[cbi]->key, length) == 0)
 			{
 			continue;	/* find end of matching block */

@@ -54,6 +54,20 @@
 #include "yesno.h"
 
 /*
+ * gets() alternative function
+ */
+static char *altgets(char *s, int n) {
+   if (fgets(s, n, stdin) == NULL) return NULL;
+   char *ln = strchr(s, '\n');
+   if (ln) *ln = '\0';
+   else while (1) {
+      int c = getchar();
+      if (c == '\n' || c == EOF) break;
+   }
+   return s;
+}
+
+/*
  * answer() installs a line from stdin in the macro definition table.
  * exit(1) is called if EOF, error, or out of memory.
  */
@@ -64,10 +78,9 @@ answer(mdefkey, mdefval)
 {
 	extern HASH *MDEFTABLE;		/* macro definition table */
 	char answerbuf[ANSWERBUFSIZE];	/* answer from stdin */
-	char *gets();			/* get a line from stdin */
 	HASHBLK *htinstall();		/* install hash table entry */
 
-	if (gets(answerbuf) == NULL)
+	if (altgets(answerbuf,sizeof(answerbuf)) == NULL)
 		exit(1);
 	if (*answerbuf != '\0')
 		if (htinstall(mdefkey, answerbuf, mdefval, MDEFTABLE) == NULL)
@@ -80,7 +93,7 @@ answer(mdefkey, mdefval)
  * fastcopy() copies file to stream fp. Returns integer YES if successful,
  * otherwise NO.
  */
-fastcopy(filename, ofp)
+int fastcopy(filename, ofp)
 	char *filename;			/* file to be copied */
 	register FILE *ofp;		/* output stream */
 {
@@ -107,7 +120,7 @@ fastcopy(filename, ofp)
  * in mfpath. Returns YES if makefile or makefile template can be
  * opened, otherwise NO.
  */
-findmf(mfname, mfpath, target)
+int findmf(mfname, mfpath, target)
 	char *mfname;			/* name of target makefile */
 	char *mfpath;			/* path to target makefile */
 	TARGET *target;			/* type of makefile target */
@@ -347,9 +360,10 @@ mktname(base, suffix)
  * nocore() places an "out of memory" error message on the standard error
  * output stream stderr.
  */
-nocore()
+void nocore(void)
 {
 	warn("out of memory");
+	return;
 }
 
 
@@ -358,9 +372,9 @@ nocore()
  * putobj() converts a source file name to an object file name and then
  * writes the file name to stream. Returns the length of the file name.
  */
-putobj(s, stream)
-	register char *s;		/* source file name */
-	register FILE *stream;		/* output stream */
+int putobj(s, stream)
+	char *s;		/* source file name */
+	FILE *stream;		/* output stream */
 {
 	register int baselen = 0;	/* length of object file basename */
 	register char *dot;		/* pointer to suffix */
@@ -406,7 +420,7 @@ putobj(s, stream)
  * integer VLIBRARY, VPROGRAM, or VUNKNOWN according to the type of makefile,
  * or VERROR if cannot open makefile.
  */
-readmf(mfname, target)
+int readmf(mfname, target)
 	char *mfname;			/* name of makefile */
 	TARGET *target;			/* type of makefile target */
 {

@@ -47,6 +47,7 @@
  * successful, otherwise NO if out of memory.
  */
 #include <stdio.h>
+#include "Mkmf.h"
 #include "null.h"
 #include "slist.h"
 #include "yesno.h"
@@ -54,12 +55,11 @@
 static int comparb();			/* compare 2 list blocks */
 static int (*sscmp)();			/* string compare function */
 
-slsort(compar, slist)
+int slsort(compar, slist)
 	int (*compar)();		/* compare two strings */
 	SLIST *slist;			/* pointer to list head block */
 {
 	char **kp;			/* pointer to key pointer array */
-	char *malloc();			/* memory allocator */
 	char **skp;			/* ptr to start of key ptr array */
 	SLBLK *curblk;			/* current list block */
 

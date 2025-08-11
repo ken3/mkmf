@@ -84,7 +84,7 @@ MAPINCLUDE INCKEY[] =			/* include style lookup table */
 #include "inckey.h"
 	};
 
-main(argc, argv)
+int main(argc, argv)
 	int argc;
 	char **argv;
 {

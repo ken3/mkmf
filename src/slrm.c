@@ -42,6 +42,7 @@
 /*
  * slrm() removes a singly linked list.
  */
+#include "Mkmf.h"
 #include "null.h"
 #include "slist.h"
 
