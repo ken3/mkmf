@@ -47,8 +47,8 @@
 #include "slist.h"
 
 void
-slrm(slist)
-	SLIST *slist;			/* pointer to list head block */
+slrm(SLIST *slist)
+// SLIST *slist;			/* pointer to list head block */
 {
 	SLBLK *nxtblk;			/* next list block */
 	while (slist->head != NULL)

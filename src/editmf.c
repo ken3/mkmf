@@ -50,49 +50,40 @@
 #include "slist.h"
 #include "yesno.h"
 
+extern char IOBUF[];		/* I/O buffer line */
+extern int DEPEND;		/* dependency analysis? */
+extern SLIST *EXTLIST;		/* external header file name list */
+extern SLIST *HEADLIST;		/* header file name list */
+extern SLIST *LIBLIST;		/* library pathname list */
+extern SLIST *SRCLIST;		/* source file name list */
+extern SLIST *SYSLIST;		/* system header file name list */
+extern HASH *MDEFTABLE;		/* macro definition table */
+
 static char Mftemp[] = "mkmfXXXXXX";		/* temporary makefile */
+
+void cleanup(int);
 
 /*
  * editmf() replaces macro definitions within a makefile.
  */
 void
-editmf(mfname, mfpath)
-	char *mfname;			/* makefile name */
-	char *mfpath;			/* makefile template pathname */
+editmf(char *mfname, char *mfpath)
+// char *mfname;			/* makefile name */
+// char *mfpath;			/* makefile template pathname */
 {
-	extern char IOBUF[];		/* I/O buffer line */
-	extern int DEPEND;		/* dependency analysis? */
-	extern SLIST *EXTLIST;		/* external header file name list */
-	extern SLIST *HEADLIST;		/* header file name list */
-	extern SLIST *LIBLIST;		/* library pathname list */
-	extern SLIST *SRCLIST;		/* source file name list */
-	extern SLIST *SYSLIST;		/* system header file name list */
-	extern HASH *MDEFTABLE;		/* macro definition table */
-	char *findmacro();		/* is the line a macro definition? */
-	char *getlin();			/* get a line from input stream */
 	char mnam[MACRONAMSIZE];	/* macro name buffer */
 	DLIST *dlp;			/* dependency list */
-	DLIST *mkdepend();		/* generate object-include file deps */
 	FILE *ifp;			/* input stream */
-	FILE *mustfopen();		/* must open file or die */
 	FILE *ofp;			/* output stream */
 	HASHBLK *htb;			/* hash table block */
-	HASHBLK *htlookup();		/* find hash table entry */
-	void cleanup();			/* remove temporary makefile and exit */
-	void dlprint();			/* print dependency list */
-	void purgcontinue();		/* get rid of continuation lines */
-	void putmacro();		/* put macro defs from table */
-	void putlin();			/* put a makefile line */
-	void putobjmacro();		/* put object file name macro def */
-	void putslmacro();		/* put macro defs from linked list */
 
 	ifp = mustfopen(mfpath, "r");
 	mkstemp(Mftemp);
 
 	if (signal(SIGINT, SIG_IGN) != SIG_IGN)
 		{
-		signal(SIGINT, cleanup);
-		signal(SIGHUP, cleanup);
+		signal(SIGINT,  cleanup);
+		signal(SIGHUP,  cleanup);
 		signal(SIGQUIT, cleanup);
 		}
 
@@ -184,11 +175,10 @@ editmf(mfname, mfpath)
  * calls exit(1).
  */
 void
-cleanup(sig)
-	int sig;			/* value of signal causing cleanup */
+cleanup(int num)
 {
-	signal(SIGINT, cleanup);
-	signal(SIGHUP, cleanup);
+	signal(SIGINT,  cleanup);
+	signal(SIGHUP,  cleanup);
 	signal(SIGQUIT, cleanup);
 
 	unlink(Mftemp);

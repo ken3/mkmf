@@ -58,12 +58,12 @@
 #define absolute_path	(*pathname == _RDIRC)
 
 char *
-optpath(pathname)
-	register char *pathname;	/* pathname to be optimized */
+optpath(char *pathname)
+// char *pathname;	/* pathname to be optimized */
 {
-	register char *bp;		/* back pathname pointer */
-	register char *fp;		/* forward pathname pointer */
-	register char *up;		/* pathname update guard pointer */
+	char *bp;		/* back pathname pointer */
+	char *fp;		/* forward pathname pointer */
+	char *up;		/* pathname update guard pointer */
 
 	bp = fp = up = pathname;
 

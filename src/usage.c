@@ -48,8 +48,8 @@
 
 extern char *PGN;			/* program name */
 
-void usage(m)
-	char *m;			/* usage error message */
+void usage(char *m)
+// char *m;			/* usage error message */
 {
 	fprintf(stderr, "usage: ");
 	if (PGN != NULL && *PGN != '\0')

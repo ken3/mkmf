@@ -49,7 +49,7 @@
 #include "slist.h"
 
 SLIST *
-slinit()
+slinit(void)
 {
 	SLIST *slist;			/* pointer to list head block */
 

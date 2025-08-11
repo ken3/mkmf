@@ -46,8 +46,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "slist.h"
 #include "hash.h"
+#include "slist.h"
+#include "dlist.h"
 #include "target.h"
 
 /*
@@ -174,6 +175,7 @@ void warns(char*, char*);
 void warn2(char*, char*, char*);
 void badopt(char, char);
 void usage(char*);
+void answer(char*, int);
 void nocore(void);
 int  storedynmacro(void);
 int  storenvmacro(void);
@@ -182,16 +184,34 @@ int  buildliblist(void);
 int  buildsrclist(void);
 int  expandlibpath(char*, char*, SLIST*);
 int  libbuftolist(char*, SLIST*, SLIST*);
-int  read_dir(char*, int (*)(), int, int);
+int  read_dir(char*, int (*)(char*, char*, int), int, int);
 int  uniqsrclist(void);
+void addincdir(void);
+int findinclude(char*, char*, char*, int);
+void getI(char*, char*, SLIST*);
+int  getinclude(char*, char*, int, FILE*);
+INCBLK *inclink(HASHBLK*);
+HASHBLK *instalinclude(char*, char*, int);
+HASHBLK *lookupinclude(char*, int);
+DLIST *mkdepend(void);
+void notfound(char*, int, char *);
+INCBLK *readC(char*, int, char *, int);
+INCBLK *readF(char*, int, char *, int);
+INCBLK *readP(char*, int, char *, int);
 int  initsysinclude(void);
 int  findinclude(char*, char*, char*, int);
 int  getinclude(char*, char*, int, FILE*);
 int  hthash(char*, HASH*);
 int  storemacro(char*);
 int  fastcopy(char*, FILE*);
-void pperror(char*);
 int  findmf(char*, char*, TARGET*);
+void findmftemplate(char*, TARGET*);
+char *gettoken(char*, char*);
+char *getoption(char*, char*, char*);
+char *getpath(char*, char*);
+int  libobj(char*);
+char *mktname(char*, char*);
+void nocore(void);
 int  putobj(char*, FILE*);
 int  readmf(char*, TARGET*);
 int  mksrclist(int, int);
@@ -201,17 +221,36 @@ int  mksymlink(int, int);
 char *pathhead(char*);
 int  applyrule(char*, char*);
 int  buildruletable(void);
+char *findrule(char*, char*);
 int  instalrule(char*);
 int  lookuprule(char*);
-int  storerule(char*);
-int  slsort(int (*)(), SLIST*);
+void makerule(char*, char*, char*);
+int  storerule(char *rulename);
+int  slsort(int (*)(const char*, const char*), SLIST*);
 int  buildsfxtable(void);
 int  mapsuffixtokey(char*);
 int  installsfx(char*, int, char*);
 int  lookuptypeofinclude(char*);
 int  lookupsfx(char*);
 int  sfxbuftotable(char*);
-
+char *strpcpy(char*, char*);
+char *optpath(char*);
+FILE *mustfopen(char*, char*);
+char *getlin(FILE*);
+void purgcontinue(FILE*);
+void putlin(FILE*);
+char *findmacro(char*, char*);
+char *getmacro(char*, FILE*);
+void putmacro(char*, FILE*);
+void putobjmacro(FILE*);
+void putslmacro(SLIST*, FILE*);
+int storemacro(char*);
+int storenvmacro(void);
+int storedynmacro(void);
+char *strsav(char*);
+void pperror(char*);
+char *getcwp(void);
+void getproject(void);
 
 #endif /* _MKMF_H_INCLUDED */
 

@@ -48,9 +48,9 @@
 
 extern char *PGN;			/* program name */
 
-void badopt(sign, c)
-	char c;				/* offending option */
-	char sign;			/* '+' or '-' sign preceding option */
+void badopt(char sign, char c)
+// char c;				/* offending option */
+// char sign;			/* '+' or '-' sign preceding option */
 {
 	if (PGN != NULL && *PGN != '\0')
 		fprintf(stderr, "%s: ", PGN);

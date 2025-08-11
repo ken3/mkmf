@@ -46,15 +46,15 @@
 #include "slist.h"
 
 void
-slvtol(slist, slv)
-	SLIST *slist;			/* pointer to list head block */
-	SLBLK **slv;			/* ptr to singly-linked list vector */
+slvtol(SLIST *slist, SLBLK **slv)
+// SLIST *slist;			/* pointer to list head block */
+// SLBLK **slv;			/* ptr to singly-linked list vector */
 {
 	SLBLK *cblk;			/* current list block */
 
 	int cbi;			/* current block index */
 	int nk = 0;			/* number of items in new list */
-	register SLBLK *cbp;		/* current block pointer */
+	SLBLK *cbp;		/* current block pointer */
 	
 	slist->head = slist->tail = NULL;
 

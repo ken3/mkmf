@@ -46,12 +46,15 @@
 #include "slist.h"
 #include "yesno.h"
 
-static HASHBLK *printtag = NULL;	/* include files already printed */
-static int COLUMN;			/* last column printed */
-static void putinchain();		/* output nested subinclude filenames */
-static void putinclude();		/* output include file pathname */
-static void putobjd();			/* output object file name */
-static void rmprinttag();		/* remove "already printed" tags */
+static HASHBLK *printtag = NULL;		/* include files already printed */
+static int COLUMN;				/* last column printed */
+static void putinchain(HASHBLK*, FILE*);	/* output nested subinclude filenames */
+static void putinclude(HASHBLK*, FILE*);	/* output include file pathname */
+static void putobjd(SLBLK*, FILE*);		/* output object file name */
+static void rmprinttag(void);			/* remove "already printed" tags */
+
+extern char OBJSFX[];				/* object file name suffix */
+
 
 /*
  * dlappend() adds a dependency chain block to the end of a list of
@@ -61,11 +64,11 @@ static void rmprinttag();		/* remove "already printed" tags */
  * the dependency chain block, or a null pointer if out of memory.
  */
 DLBLK *
-dlappend(srctyp, srcblk, incblk, dlist)
-	int srctyp;			/* source file type */
-	SLBLK *srcblk;			/* pointer to the source file block */
-	INCBLK *incblk;			/* included file dependency chain */
-	DLIST *dlist;			/* pointer to list head block */
+dlappend(int srctyp, SLBLK *srcblk, INCBLK *incblk, DLIST *dlist)
+// int srctyp;			/* source file type */
+// SLBLK *srcblk;			/* pointer to the source file block */
+// INCBLK *incblk;			/* included file dependency chain */
+// DLIST *dlist;			/* pointer to list head block */
 {
 	DLBLK *dblk;			/* pointer to dependency list block */
 
@@ -97,7 +100,7 @@ dlappend(srctyp, srcblk, incblk, dlist)
  * null pointer if out of memory.
  */
 DLIST *
-dlinit()
+dlinit(void)
 {
 	DLIST *dlist;			/* pointer to list head block */
 
@@ -119,12 +122,11 @@ dlinit()
  * included in another file.
  */
 void
-dlprint(dlist, ofp)
-	DLIST *dlist;			/* dependency list */
-	FILE *ofp;			/* output stream */
+dlprint(DLIST *dlist, FILE *ofp)
+// DLIST *dlist;			/* dependency list */
+// FILE *ofp;			/* output stream */
 {
 	DLBLK *dblk;			/* pointer to dependency list block */
-	HASHBLK *lookupinclude();	/* look up include name in hash table */
 	INCBLK *iblk;			/* cur. include file hash table blk */
 
 	if (dlist->d_head != NULL)
@@ -152,9 +154,9 @@ dlprint(dlist, ofp)
  * detect looping.
  */
 static void
-putinchain(htb, ofp)
-	HASHBLK *htb;			/* hash table blk including chain */
-	FILE *ofp;			/* output stream */
+putinchain(HASHBLK *htb, FILE *ofp)
+// HASHBLK *htb;			/* hash table blk including chain */
+// FILE *ofp;			/* output stream */
 {
 	INCBLK *iblk;			/* cur. include file hash table blk */
 
@@ -191,9 +193,9 @@ putinchain(htb, ofp)
  * tag will indicate that the filename has already been seen.
  */
 static void
-putinclude(htb, ofp)
-	HASHBLK *htb;			/* include file hash block */
-	FILE *ofp;			/* output stream */
+putinclude(HASHBLK *htb, FILE *ofp)
+// HASHBLK *htb;			/* include file hash block */
+// FILE *ofp;			/* output stream */
 {
 	if (htb->h_tag == NULL)
 		{
@@ -218,13 +220,10 @@ putinclude(htb, ofp)
  * putobjd() writes an object file dependency name.
  */
 static void
-putobjd(srcblk, ofp)
-	SLBLK *srcblk;			/* source file name list block */
-	FILE *ofp;			/* output stream */
+putobjd(SLBLK *srcblk, FILE *ofp)
+// SLBLK *srcblk;			/* source file name list block */
+// FILE *ofp;			/* output stream */
 {
-	extern char OBJSFX[];		/* object file name suffix */
-	int putobj();			/* output object file name */
-
 	COLUMN = putobj(srcblk->key, ofp) + 1;
 	fprintf(ofp, ":");
 }
@@ -236,10 +235,10 @@ putobjd(srcblk, ofp)
  * file dependency has already been printed for the current source file.
  */
 static void
-rmprinttag()
+rmprinttag(void)
 {
-	register HASHBLK *curhtb;	/* current hash table block */
-	register HASHBLK *nxthtb;	/* next hash table block */
+	HASHBLK *curhtb;	/* current hash table block */
+	HASHBLK *nxthtb;	/* next hash table block */
 
 	for (curhtb = printtag; curhtb != NULL; curhtb = nxthtb)
 		{

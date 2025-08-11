@@ -46,10 +46,11 @@
  */
 #include "null.h"
 
+extern char *_PROJECT;			/* project root directory pathname */
+
 char *
-getcwp()
+getcwp(void)
 {
-	extern char *_PROJECT;		/* project root directory pathname */
 	void getproject();		/* get PROJECT environment variable */
 
 	if (_PROJECT == NULL)

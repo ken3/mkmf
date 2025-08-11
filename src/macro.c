@@ -48,8 +48,11 @@
 #include "stringx.h"
 #include "yesno.h"
 
-extern char IOBUF[];			/* I/O buffer line */
-extern HASH *MDEFTABLE;			/* macro definition table */
+extern char IOBUF[];		/* I/O buffer line */
+extern HASH *MDEFTABLE;		/* macro definition table */
+extern short CONTINUE;		/* does the line continue? */
+extern SLIST *SRCLIST;		/* source file name list */
+extern char **environ;		/* user environment */
 
 /*
  * findmacro() searchs a line for a macro definition. A macro definition
@@ -59,11 +62,11 @@ extern HASH *MDEFTABLE;			/* macro definition table */
  * findmacro() returns the name, or NULL if not found.
  */
 char *
-findmacro(macroname, bp)
-	char *macroname;		/* macro name receiving buffer */
-	register char *bp;		/* buffer pointer */
+findmacro(char *macroname, char *bp)
+// char *macroname;		/* macro name receiving buffer */
+// char *bp;			/* buffer pointer */
 {
-	register char *mp;		/* macro name pointer */
+	char *mp;		/* macro name pointer */
 
 	while (WHITESPACE(*bp))
 		bp++;
@@ -103,14 +106,12 @@ findmacro(macroname, bp)
  * one line further lines are fetched from the input stream.
  */
 char *
-getmacro(mdefbuf, stream)
-	char *mdefbuf;			/* receiving macro definition buffer */
-	FILE *stream;			/* input stream */
+getmacro(char *mdefbuf, FILE *stream)
+// char *mdefbuf;			/* receiving macro definition buffer */
+// FILE *stream;			/* input stream */
 {
-	extern short CONTINUE;		/* does the line continue? */
-	char *getlin();			/* get a line from input stream */
-	register char *bp;		/* buffer pointer */
-	register char *mp;		/* macro definition buffer pointer */
+	char *bp;		/* buffer pointer */
+	char *mp;		/* macro definition buffer pointer */
 
 	bp = IOBUF;
 	mp = mdefbuf;
@@ -139,12 +140,12 @@ getmacro(mdefbuf, stream)
  * putmacro() prints a macro definition from the macro definition table.
  */
 void
-putmacro(macrovalue, stream)
-	char *macrovalue;		/* value of macro definition */
-	register FILE *stream;		/* output stream */
+putmacro(char *macrovalue, FILE *stream)
+// char *macrovalue;		/* value of macro definition */
+// FILE *stream;			/* output stream */
 {
-	register char *iop;		/* IOBUF pointer */
-	register int c;			/* current character */
+	char *iop;		/* IOBUF pointer */
+	int c;			/* current character */
 
 	iop = IOBUF;
 	while ((c = *iop++) != '=')
@@ -158,17 +159,13 @@ putmacro(macrovalue, stream)
  * putobjmacro() derives and prints object file names from the SRCLIST list.
  */
 void
-putobjmacro(stream)
-	register FILE *stream;		/* output stream */
+putobjmacro(FILE *stream)
+// FILE *stream;		/* output stream */
 {
-	extern SLIST *SRCLIST;		/* source file name list */
-	register char *iop;		/* IOBUF pointer */
-	register int c;			/* current character */
+	char *iop;		/* IOBUF pointer */
+	int c;			/* current character */
 	char *suffix;			/* suffix pointer */
-	HASHBLK *lookupinclude();	/* look up include name in hash table */
 	int cnt = 0;			/* number of object filenames printed */
-	int lookuptypeofinclude();	/* look up the brand of include */
-	int putobj();			/* print object file name */
 	int type;			/* file type */
 	SLBLK *lbp;			/* list block pointer */
 
@@ -203,12 +200,12 @@ putobjmacro(stream)
  * putslmacro() copies a macro definition from a list.
  */
 void
-putslmacro(slist, stream)
-	SLIST *slist;			/* singly-linked macro def list */
-	register FILE *stream;		/* output stream */
+putslmacro(SLIST *slist, FILE *stream)
+// SLIST *slist;		/* singly-linked macro def list */
+// FILE *stream;		/* output stream */
 {
-	register char *iop;		/* IOBUF pointer */
-	register int c;			/* current character */
+	char *iop;		/* IOBUF pointer */
+	int c;			/* current character */
 	SLBLK *lbp;			/* list block pointer */
 
 	iop = IOBUF;
@@ -233,12 +230,11 @@ putslmacro(slist, stream)
  * Returns integer YES if a macro definition (macro=definition), otherwise
  * NO. exit(1) is called if out of memory.
  */
-int storemacro(macdef)
-	char *macdef;			/* macro definition string */
+int storemacro(char *macdef)
+// char *macdef;			/* macro definition string */
 {
-	register int i;			/* macro value index */
-	register int j;			/* macro name index */
-	HASHBLK *htinstall();		/* install hash table entry */
+	int i;			/* macro value index */
+	int j;			/* macro name index */
 
 	for (i = 0; macdef[i] != '='; i++)
 		if (macdef[i] == '\0')
@@ -267,10 +263,9 @@ int storemacro(macdef)
  */
 int storenvmacro(void)
 {
-	extern char **environ;		/* user environment */
-	register char **ep;		/* environment pointer */
-	register char *value;		/* macro value pointer */
-	register int i;			/* macro name index */
+	char **ep;		/* environment pointer */
+	char *value;		/* macro value pointer */
+	int i;			/* macro name index */
 	char macroname[MACRONAMSIZE];	/* macro name buffer */
 
 	if (environ)

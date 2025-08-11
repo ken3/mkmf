@@ -49,12 +49,12 @@
 extern char *PGN;			/* program name */
 
 char *
-pathcat(p1_p2, p1, p2)
-	char *p1;
-	char *p2;
-	char *p1_p2;
+pathcat(char *p1_p2, char *p1, char *p2)
+// char *p1_p2;
+// char *p1;
+// char *p2;
 {
-	register int plen;		/* maximum pathname length */
+	int plen;		/* maximum pathname length */
 	char *sp1_p2;			/* start of p1_p2 */
 
 	sp1_p2 = p1_p2;

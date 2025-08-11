@@ -60,14 +60,16 @@ extern int errno;			/* error indicator for system calls */
 extern SLIST *SRCLIST;			/* source file name list */
 extern SLIST *HEADLIST;			/* header file name list */
 extern HASH *MDEFTABLE;			/* macro definition table */
+extern int MKSYMLINK;			/* clobber rogue links if > 1 */
 
-static int addsrctable();		/* add file to source hash table */
-static int addvsrctable();		/* add virtual file to hash table */
-static int  hashtolist();		/* convert hash table file list */
+
 static HASH *SRCTABLE = NULL;		/* source file hash table */
 static HASH *HDRTABLE = NULL;		/* header file hash table */
-
 static struct stat CURDIRSTAT;		/* current directory status */
+
+static int addsrctable(char*, char*, int);	/* add file to src hash table / list */
+static int addvsrctable(char*, char*, int);	/* add virtual file to hash table */
+static int hashtolist(HASH*, SLIST*);		/* convert hash table file list */
 
 /*
  * mksymlink() creates symbolic links from foreign directories into
@@ -89,14 +91,12 @@ static struct stat CURDIRSTAT;		/* current directory status */
  * to directory a, and issue a warning that f.c is linked to a file in an
  * external directory.
  */
-int mksymlink(needsrc, needhdr)
-	int needsrc;			/* need source file names */
-	int needhdr;			/* need header file names */
+int mksymlink(int needsrc, int needhdr)
+// int needsrc;			/* need source file names */
+// int needhdr;			/* need header file names */
 {
-	char *getpath();		/* get next path */
 	char *vp;			/* virtual path buffer pointer */
 	char vpath[PATHSIZE];		/* virtual directory path buffer */
-	int read_dir();			/* read dir for source and headers */
 	struct stat statbuf;		/* virtual path stat buffer */
 
 	if ((HDRTABLE = htinit(SOURCETABLESIZE)) == NULL)
@@ -176,10 +176,10 @@ int mksymlink(needsrc, needhdr)
  * YES if successful, otherwise NO.
  */
 static int
-addsrctable(dirname, filename, tswitch)
-	char *dirname;			/* directory name */
-	char *filename;			/* file name to add to source table */
-	int tswitch;			/* source/header table switch */
+addsrctable(char *dirname, char *filename, int tswitch)
+// char *dirname;			/* directory name */
+// char *filename;			/* file name to add to source table */
+// int tswitch;			/* source/header table switch */
 {
 	char symbuf[PATHSIZE];		/* symbolic link pathname buffer */
 
@@ -218,10 +218,10 @@ if (readlink(filename, symbuf, PATHSIZE) < 0)
  * Returns YES if successful, otherwise NO.
  */
 static int
-addvsrctable(dirname, filename, tswitch)
-	char *dirname;			/* directory name */
-	char *filename;			/* file name to add to source table */
-	int tswitch;			/* source/header table switch */
+addvsrctable(char *dirname, char *filename, int tswitch)
+// char *dirname;		/* directory name */
+// char *filename;		/* file name to add to source table */
+// int tswitch;			/* source/header table switch */
 {
 	char path[PATHSIZE];		/* path to foreign source file */
 	HASH *table;			/* pointer to source/header file table */
@@ -277,12 +277,10 @@ addvsrctable(dirname, filename, tswitch)
  * otherwise NO.
  */
 static int
-hashtolist(table, list)
-	HASH *table;			/* hash table */
-        SLIST *list;			/* pointer to list head block */
+hashtolist(HASH *table, SLIST *list)
+// HASH *table;			/* hash table */
+// SLIST *list;			/* pointer to list head block */
 {
-        extern int MKSYMLINK;           /* clobber rogue links if > 1 */
-
 	htrewind(table);
 	while (htnext(table))
 		{
@@ -314,9 +312,9 @@ hashtolist(table, list)
 /*
  * mksymlink() dummy routine always returns NO.
  */
-mksymlink(needsrc, needhdr)
-	int needsrc;			/* need source file names */
-	int needhdr;			/* need header file names */
+int mksymlink(int needsrc, int needhdr)
+// int needsrc;			/* need source file names */
+// int needhdr;			/* need header file names */
 {
 	warn("symbolic links not available");
 	return(NO);

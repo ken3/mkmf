@@ -52,9 +52,9 @@
 #include "stringx.h"
 
 char *
-slappend(key, slist)
-	char *key;			/* key string */
-	SLIST *slist;			/* pointer to list head block */
+slappend(char *key, SLIST *slist)
+// char *key;			/* key string */
+// SLIST *slist;		/* pointer to list head block */
 {
 	SLBLK *slbptr;			/* pointer to list block */
 	unsigned int klen;		/* key length */

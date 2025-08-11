@@ -46,8 +46,8 @@
 #include "slist.h"
 
 SLBLK **
-slvect(slist)
-	SLIST *slist;			/* pointer to list head block */
+slvect(SLIST *slist)
+// SLIST *slist;			/* pointer to list head block */
 {
 	SLBLK **vp;			/* pointer to block pointer array */
 	SLBLK **svp;			/* ptr to start of block ptr array */

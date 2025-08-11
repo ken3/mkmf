@@ -53,27 +53,24 @@ extern SLIST *SRCLIST;			/* source file name list */
 extern SLIST *HEADLIST;			/* header file name list */
 extern HASH *MDEFTABLE;			/* macro definition table */
 
-static int addsrctable();		/* add file to src hash table / list */
-static int addvsrctable();		/* add virtual file to hash table */
-static int  hashtolist();		/* convert hash table file list */
 static HASH *SRCTABLE = NULL;		/* source file hash table */
-
 static struct stat CURDIRSTAT;		/* current directory status */
+
+static int addsrctable(char*, char*, int);		/* add file to src hash table / list */
+static int addvsrctable(char*, char*, int);		/* add virtual file to hash table */
+static int hashtolist(HASH *table, SLIST *list);	/* convert hash table file list */
 
 /*
  * mksrclist() composes a list of source and header files names
  * from the current directory and directories listed in VPATH.
  * Return YES if successful, otherwise NO.
  */
-int mksrclist(needsrc, needhdr)
-	int needsrc;			/* need source file names */
-	int needhdr;			/* need header file names */
+int mksrclist(int needsrc, int needhdr)
+// int needsrc;			/* need source file names */
+// int needhdr;			/* need header file names */
 {
-	char *getpath();		/* get next path */
 	char *vp;			/* virtual path buffer pointer */
 	char vpath[PATHSIZE];		/* virtual directory path buffer */
-	int addsrclist();		/* add file to header list */
-	int read_dir();			/* read dir for source and headers */
 	struct stat statbuf;		/* virtual path stat buffer */
 
 	/*
@@ -150,10 +147,10 @@ int mksrclist(needsrc, needhdr)
  * addsrclist() adds a file to a source/header file list. Returns YES if
  * successful, otherwise NO.
  */
-int addsrclist(dirname, filename, lswitch)
-	char *dirname;			/* directory name */
-	char *filename;			/* file name to add to source list */
-	int lswitch;			/* source/header list switch */
+int addsrclist(char *dirname, char *filename, int lswitch)
+// char *dirname;			/* directory name */
+// char *filename;			/* file name to add to source list */
+// int lswitch;			/* source/header list switch */
 {
 	if (lswitch == 's')
 		return((slappend(filename, SRCLIST) != NULL) ? YES : NO);
@@ -168,10 +165,10 @@ int addsrclist(dirname, filename, lswitch)
  * singly-linked list. Returns YES if successful, otherwise NO.
  */
 static int
-addsrctable(dirname, filename, tswitch)
-	char *dirname;			/* directory name */
-	char *filename;			/* file name to add to source table */
-	int tswitch;			/* source/header switch */
+addsrctable(char *dirname, char *filename, int tswitch)
+// char *dirname;		/* directory name */
+// char *filename;		/* file name to add to source table */
+// int tswitch;			/* source/header switch */
 {
 	if (tswitch == 's')
 		{
@@ -199,10 +196,10 @@ addsrctable(dirname, filename, tswitch)
  * YES if successful, otherwise NO.
  */
 static int
-addvsrctable(dirname, filename, tswitch)
-	char *dirname;			/* directory name */
-	char *filename;			/* file name to add to source table */
-	int tswitch;			/* source/header table switch */
+addvsrctable(char *dirname, char *filename, int tswitch)
+// char *dirname;		/* directory name */
+// char *filename;		/* file name to add to source table */
+// int tswitch;			/* source/header table switch */
 {
 	HASH *table;			/* pointer to source/header file table */
 
@@ -229,9 +226,9 @@ addvsrctable(dirname, filename, tswitch)
  * NO.
  */
 static int
-hashtolist(table, list)
-	HASH *table;			/* hash table */
-        SLIST *list;			/* pointer to list head block */
+hashtolist(HASH *table, SLIST *list)
+// HASH *table;			/* hash table */
+// SLIST *list;			/* pointer to list head block */
 {
 	char path[PATHSIZE];		/* path to foreign source file */
 

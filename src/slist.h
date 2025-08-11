@@ -70,12 +70,12 @@ typedef struct slisthb
 /*
  * Functions defined for singly-linked list operations
  */
-extern char *slappend();		/* append key */
-extern SLIST *slinit();			/* initialize list */
-extern void slrm();			/* remove list item */
-extern int slsort();			/* sort list */
-extern SLBLK **slvect();		/* make linked list vector */
-extern void slvtol();			/* convert vector to linked list */
+extern char *slappend(char *key, SLIST *slist);           /* append key */
+extern SLIST *slinit(void);                               /* initialize list */
+extern void slrm(SLIST *slist);                           /* remove list item */
+extern int slsort(int (*compar)(const char*, const char*), SLIST *slist);         /* sort list */
+extern SLBLK **slvect(SLIST *slist);                      /* make linked list vector */
+extern void slvtol(SLIST *slist, SLBLK **slv);            /* convert vector to linked list */
 
 #endif /* _SLIST_H_INCLUDED */
 

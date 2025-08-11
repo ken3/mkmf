@@ -47,6 +47,11 @@
 #include "suffix.h"
 #include "yesno.h"
 
+extern HASH *MDEFTABLE;		/* macro definition table */
+extern SUFFIX DEFSFX[];		/* default suffix list */
+extern MAPINCLUDE INCKEY[];	/* include style lookup table */
+extern char OBJSFX[];		/* object file name suffix */
+
 static int SFX1[SFXTABSIZE];		/* single character suffixes */
 static int INC1[SFXTABSIZE];		/* include file types for 1 char sfx */
 static char *SPEC1[SFXTABSIZE];		/* include file specs for 1 char sfx */
@@ -58,13 +63,8 @@ static SFXBLK *SFX2[SFXTABSIZE];	/* 2+ character suffixes */
  */
 int buildsfxtable(void)
 {
-	extern HASH *MDEFTABLE;		/* macro definition table */
-	extern SUFFIX DEFSFX[];		/* default suffix list */
 	HASHBLK *htb;			/* hash table block */
-	HASHBLK *htlookup();		/* find hash table entry */
 	int i;				/* suffix list counter */
-	int installsfx();		/* install suffix in hash table */
-	int sfxbuftotable();		/* feed suffixes to installsfx() */
 
 	/* default suffix list */
 	for (i = 0; DEFSFX[i].suffix != NULL; i++)
@@ -90,14 +90,12 @@ int buildsfxtable(void)
  * included file type is updated. Returns integer YES if successful,
  * otherwise NO.
  */
-int installsfx(suffix, sfxtyp, incspec)
-	char *suffix;			/* suffix string */
-	int sfxtyp;			/* suffix type */
-	char *incspec;			/* user spec for include file */
+int installsfx(char *suffix, int sfxtyp, char *incspec)
+// char *suffix;			/* suffix string */
+// int sfxtyp;			/* suffix type */
+// char *incspec;			/* user spec for include file */
 {
-	char *strsav();			/* save a string somewhere */
 	int sfxindex;			/* index into suffix tables */
-	int mapsuffixkey();		/* convert suffix spec to index key */ 
 	SFXBLK *sfxblk;			/* suffix list block */
 
 	if (*suffix == '.')
@@ -127,11 +125,9 @@ int installsfx(suffix, sfxtyp, incspec)
  * mapsuffixtokey() translates a user-specified include file type string
  * into an internal integer definition. Returns the integer definition.
  */
-int mapsuffixtokey(spec)
-	char *spec;			/* user spec for include file */
+int mapsuffixtokey(char *spec)
+// char *spec;			/* user spec for include file */
 {
-	extern MAPINCLUDE INCKEY[];	/* default suffix list */
-
 	int i;				/* INCKEY index */
 
 	if (spec == NULL)
@@ -149,8 +145,8 @@ int mapsuffixtokey(spec)
  * lookuptypeofinclude() returns the include file type for suffix, or 0 if
  * unknown suffix.
  */
-int lookuptypeofinclude(suffix)
-	char *suffix;			/* suffix string */
+int lookuptypeofinclude(char *suffix)
+// char *suffix;			/* suffix string */
 {
 	SFXBLK *sfxblk;			/* suffix block pointer */
 
@@ -168,8 +164,8 @@ int lookuptypeofinclude(suffix)
 /*
  * lookupsfx() returns the suffix type, or 0 if unknown suffix.
  */
-int lookupsfx(suffix)
-	char *suffix;			/* suffix string */
+int lookupsfx(char *suffix)
+// char *suffix;			/* suffix string */
 {
 	SFXBLK *sfxblk;			/* suffix block pointer */
 
@@ -202,14 +198,11 @@ int lookupsfx(suffix)
  * If the suffix is object file type, the OBJSFX default object suffix
  * is modified accordingly. Returns YES if successful, otherwise NO.
  */
-int sfxbuftotable(sfxbuf)
-	char *sfxbuf;			/* buffer containing suffixes */
+int sfxbuftotable(char *sfxbuf)
+// char *sfxbuf;			/* buffer containing suffixes */
 {
-	extern char OBJSFX[];		/* object file name suffix */
-	char *gettoken();		/* get next token */
 	char *sfxtyp;			/* suffix type */
 	char suffix[SUFFIXSIZE+2];	/* suffix + modifier */
-	int installsfx();		/* install suffix in hash table */
 
 	while ((sfxbuf = gettoken(suffix, sfxbuf)) != NULL)
 		if ((sfxtyp = strrchr(suffix, ':')) == NULL)

@@ -49,9 +49,9 @@
 extern char *PGN;		/* program name */
 
 FILE *
-mustfopen(filename,mode)
-	char *filename;
-	char *mode;
+mustfopen(char *filename, char *mode)
+// char *filename;
+// char *mode;
 {
 	FILE *stream;			/* file stream */
 

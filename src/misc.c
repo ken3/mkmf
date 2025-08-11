@@ -53,6 +53,17 @@
 #include "suffix.h"
 #include "yesno.h"
 
+extern HASH *MDEFTABLE;		/* macro definition table */
+extern int CFLAG;		/* makefile creation message */
+extern char *MAKEFILE;		/* makefile template name */
+extern int FFLAG;	        /* makefile template pathname flag */
+extern int LIBOBJ;		/* load object file into library? */
+extern int LIBOBJ;		/* load object file into library? */
+extern char OBJSFX[];		/* object file name suffix */
+extern char IOBUF[];		/* I/O buffer line */
+extern HASH *MDEFTABLE;		/* macro definition table */
+extern int LIBOBJ;		/* load object file into library? */
+
 /*
  * gets() alternative function
  */
@@ -72,13 +83,11 @@ static char *altgets(char *s, int n) {
  * exit(1) is called if EOF, error, or out of memory.
  */
 void
-answer(mdefkey, mdefval)
-	char *mdefkey;			/* macro definition key */
-	int mdefval;			/* macro definition value */
+answer(char *mdefkey, int mdefval)
+// char *mdefkey;			/* macro definition key */
+// int mdefval;				/* macro definition value */
 {
-	extern HASH *MDEFTABLE;		/* macro definition table */
 	char answerbuf[ANSWERBUFSIZE];	/* answer from stdin */
-	HASHBLK *htinstall();		/* install hash table entry */
 
 	if (altgets(answerbuf,sizeof(answerbuf)) == NULL)
 		exit(1);
@@ -93,12 +102,12 @@ answer(mdefkey, mdefval)
  * fastcopy() copies file to stream fp. Returns integer YES if successful,
  * otherwise NO.
  */
-int fastcopy(filename, ofp)
-	char *filename;			/* file to be copied */
-	register FILE *ofp;		/* output stream */
+int fastcopy(char *filename, FILE *ofp)
+// char *filename;		/* file to be copied */
+// FILE *ofp;			/* output stream */
 {
-	register int ifd;		/* input file descriptor */
-	register int n;			/* byte count */
+	int ifd;		/* input file descriptor */
+	int n;			/* byte count */
 	char buf[BUFSIZ];		/* I/O buffer */
 
 	if ((ifd = OPEN(filename, 0, 0644)) == -1)
@@ -120,15 +129,12 @@ int fastcopy(filename, ofp)
  * in mfpath. Returns YES if makefile or makefile template can be
  * opened, otherwise NO.
  */
-int findmf(mfname, mfpath, target)
-	char *mfname;			/* name of target makefile */
-	char *mfpath;			/* path to target makefile */
-	TARGET *target;			/* type of makefile target */
+int findmf(char *mfname, char *mfpath, TARGET *target)
+// char *mfname;			/* name of target makefile */
+// char *mfpath;			/* path to target makefile */
+// TARGET *target;			/* type of makefile target */
 {
-	extern int CFLAG;		/* makefile creation message */
-	int readmf();			/* read makefile */
 	int targettype;			/* type of makefile requested */
-	void findmftemplate();		/* find makefile template */
 
 	targettype = target->type;
 	if (FILEXIST(mfname))
@@ -175,17 +181,11 @@ int findmf(mfname, mfpath, target)
  * findmftemplate() returns the pathname of a makefile template in mfpath.
  */
 void
-findmftemplate(mfpath, target)
-	char *mfpath;			/* path to target makefile */
-	TARGET *target;			/* type of makefile target */
+findmftemplate(char *mfpath, TARGET *target)
+// char *mfpath;			/* path to target makefile */
+// TARGET *target;			/* type of makefile target */
 {
-	extern char *MAKEFILE;		/* makefile template name */
-	extern int FFLAG;	        /* makefile template pathname flag */
-	extern int LIBOBJ;		/* load object file into library? */
 	char *cwp;			/* current project pathname pointer */
-	char *getcwp();			/* get current project pathname */
-	char *mktname();		/* make template name */
-	char *pathcat();		/* pathname concatenation */
 	char tname[MAXNAMLEN+1];	/* template name */
 
 	if (FFLAG == YES)
@@ -225,9 +225,9 @@ findmftemplate(mfpath, target)
  * the end of the token buffer.
  */
 char *
-gettoken(token, tp)
-	register char *token;		/* receiving token */
-	register char *tp;		/* token buffer pointer */
+gettoken(char *token, char *tp)
+// char *token;		/* receiving token */
+// char *tp;		/* token buffer pointer */
 {
 	while (isspace(*tp) && *tp != '\0')
 		tp++;
@@ -250,10 +250,10 @@ gettoken(token, tp)
  * reaching the end of the token buffer.
  */
 char *
-getoption(token, tp, option)
-	register char *token;		/* receiving token */
-	register char *tp;		/* token buffer pointer */
-	register char *option;		/* option leader string */
+getoption(char *token, char *tp, char *option)
+// char *token;		/* receiving token */
+// char *tp;		/* token buffer pointer */
+// char *option;	/* option leader string */
 {
 	int optlen = strlen(option);	/* option length */
 
@@ -285,9 +285,9 @@ getoption(token, tp, option)
  * the end of the path buffer.
  */
 char *
-getpath(path, pp)
-	register char *path;		/* receiving path */
-	register char *pp;		/* path buffer pointer */
+getpath(char *path, char *pp)
+// char *path;		/* receiving path */
+// char *pp;		/* path buffer pointer */
 {
 	while ((isspace(*pp) || *pp == ':') && *pp != '\0')
 		pp++;
@@ -312,11 +312,11 @@ getpath(path, pp)
  * scanned for $(LIBRARY).
  */
 int
-libobj(bp)
-	register char *bp;		/* buffer pointer */
+libobj(char *bp)
+// char *bp;		/* buffer pointer */
 {
-	register char *sbp;		/* save buffer pointer */
-	register char *mp;		/* macro name pointer */
+	char *sbp;		/* save buffer pointer */
+	char *mp;		/* macro name pointer */
 
 	while (*bp++ != '=')
 		continue;
@@ -340,9 +340,9 @@ libobj(bp)
  * name if successful, otherwise NULL.
  */
 char *
-mktname(base, suffix)
-	char *base;			/* template basename */
-	char *suffix;			/* template suffix */
+mktname(char *base, char *suffix)
+// char *base;			/* template basename */
+// char *suffix;		/* template suffix */
 {
 	if (strlen(base) + strlen(suffix) > MAXNAMLEN)
 		{
@@ -372,16 +372,14 @@ void nocore(void)
  * putobj() converts a source file name to an object file name and then
  * writes the file name to stream. Returns the length of the file name.
  */
-int putobj(s, stream)
-	char *s;		/* source file name */
-	FILE *stream;		/* output stream */
+int putobj(char *s, FILE *stream)
+// char *s;				/* source file name */
+// FILE *stream;		/* output stream */
 {
-	register int baselen = 0;	/* length of object file basename */
-	register char *dot;		/* pointer to suffix */
+	int baselen = 0;	/* length of object file basename */
+	char *dot;		/* pointer to suffix */
 	char *pathsep;			/* pathname separator */
 	static int psfxlen = 0;		/* length of object prefix & suffix */
-	extern int LIBOBJ;		/* load object file into library? */
-	extern char OBJSFX[];		/* object file name suffix */
 
 	if (psfxlen == 0)
 		{
@@ -420,28 +418,15 @@ int putobj(s, stream)
  * integer VLIBRARY, VPROGRAM, or VUNKNOWN according to the type of makefile,
  * or VERROR if cannot open makefile.
  */
-int readmf(mfname, target)
-	char *mfname;			/* name of makefile */
-	TARGET *target;			/* type of makefile target */
+int readmf(char *mfname, TARGET *target)
+// char *mfname;			/* name of makefile */
+// TARGET *target;			/* type of makefile target */
 {
-	register char *bp;		/* buffer pointer */
-	extern char IOBUF[];		/* I/O buffer line */
-	extern HASH *MDEFTABLE;		/* macro definition table */
-	extern int LIBOBJ;		/* load object file into library? */
-	char *findmacro();		/* is the line a macro definition? */
-	char *findrule();		/* is the line a rule definition? */
-	char *getlin();			/* get a line from input stream */
-	char *getmacro();		/* get macro def from input stream */
+	char *bp;		/* buffer pointer */
 	char macrodef[MACRODEFSIZE];	/* macro definition buffer */
 	char macroname[MACRONAMSIZE];	/* macro name buffer */
 	char rulename[2*SUFFIXSIZE+3];	/* transformation rule name */
-	FILE *fopen();			/* open file */
 	FILE *fp;			/* file pointer */
-	HASHBLK *htinstall();		/* install hash table entry */
-	HASHBLK *htlookup();		/* find hash table entry */
-	int libobj();			/* is object file loaded into library?*/
-	int storerule();		/* store transformation rule */
-	void purgcontinue();		/* get rid of continuation lines */
 
 	target->type = target->dest = VUNKNOWN;
 	if ((fp = fopen(mfname, "r")) == NULL)

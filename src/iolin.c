@@ -50,11 +50,11 @@ short CONTINUE;				/* does the line continue? */
  * returns IOBUF, or null pointer upon end of file.
  */
 char *
-getlin(stream)
-	register FILE *stream;		/* input stream */
+getlin(FILE *stream)
+// FILE *stream;		/* input stream */
 {
-	register int c;			/* current character */
-	register char *iop;		/* IOBUF pointer */
+	int c;			/* current character */
+	char *iop;		/* IOBUF pointer */
 
 	iop = IOBUF;
 	while ((c = getc(stream)) != '\n' && c != EOF)
@@ -79,11 +79,11 @@ getlin(stream)
  * purgcontinue() eats up continuation lines from an input stream.
  */
 void
-purgcontinue(stream)
-	register FILE *stream;		/* input stream */
+purgcontinue(FILE *stream)
+// FILE *stream;		/* input stream */
 {
-	register int c;			/* current character */
-	register int lastc;		/* previous character */
+	int c;			/* current character */
+	int lastc;		/* previous character */
 
 	if (CONTINUE == YES)
 		{
@@ -105,11 +105,11 @@ purgcontinue(stream)
  * IOBUF holds a CONTINUE line, a `\' precedes the newline.
  */
 void
-putlin(stream)
-	register FILE *stream;		/* output stream */
+putlin(FILE *stream)
+// FILE *stream;		/* output stream */
 {
-	register int c;			/* current character */
-	register char *iop;		/* IOBUF pointer */
+	int c;			/* current character */
+	char *iop;		/* IOBUF pointer */
 
 	iop = IOBUF;
 	while (c = *iop++)

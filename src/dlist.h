@@ -62,6 +62,6 @@ typedef struct _dlisthb
 /*
  * Functions defined for dependency list operations
  */
-extern DLBLK *dlappend();		/* append to list */
-extern DLIST *dlinit();			/* initialize list */
-extern void dlprint();			/* print list */
+extern DLBLK *dlappend(int srctyp, SLBLK *srcblk, INCBLK *incblk, DLIST *dlist); /* append to list */
+extern DLIST *dlinit(void);			/* initialize list */
+extern void dlprint(DLIST *dlist, FILE *ofp);	/* print list */

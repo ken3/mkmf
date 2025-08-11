@@ -94,9 +94,16 @@ static SLIST *P_INCDIR;			/* Pascal include directories */
 SLIST *EXTLIST;				/* external header file name list */
 SLIST *SYSLIST;				/* system header file name list */
 
-extern char *PGN;			/* program name */
-extern int  SYSHDRS;			/* search system header files? */
-extern HASH *MDEFTABLE;			/* macro definition table */
+extern char  *PGN;			/* program name */
+extern int   SYSHDRS;			/* search system header files? */
+extern HASH  *MDEFTABLE;		/* macro definition table */
+extern SLIST *SRCLIST;			/* source file name list */
+
+void getI(char*, char*, SLIST*);
+INCBLK* readP(char*, int, char*, int);
+INCBLK* readC(char*, int, char*, int);
+INCBLK* readF(char*, int, char*, int);
+void cleanup(int);
 
 /*
  * addincdir() adds directories containing include files to the
@@ -104,13 +111,9 @@ extern HASH *MDEFTABLE;			/* macro definition table */
  * are derived from makefile macro definitions.
  */
 void
-addincdir()
+addincdir(void)
 {
-	char *slappend();		/* append to singly-linked list */
 	HASHBLK *htb;			/* hash table entry block */
-	HASHBLK *htlookup();		/* find hash table entry */
-	int cleanup();			/* remove temporary makefile and exit */
-	void getI();			/* get include directory pathnames */
 
 	/* initialize system include pathnames */
 	initsysinclude();
@@ -119,7 +122,7 @@ addincdir()
 	if ((htb = htlookup(MCFLAGS, MDEFTABLE)) != NULL)
 		getI(htb->h_key, htb->h_def, C_INCDIR);
 	if (slappend(SYSINCLUDE, C_INCDIR) == NULL)
-		cleanup();
+		cleanup(0);
 	
 	/* C++ CXXFLAGS macro */
 	if ((htb = htlookup(MCXXFLAGS, MDEFTABLE)) != NULL)
@@ -135,19 +138,19 @@ addincdir()
 
 	if (slappend(SYSINCLUDECC, CXX_INCDIR) == NULL ||
 	    slappend(SYSINCLUDE,   CXX_INCDIR) == NULL)
-		cleanup();
+		cleanup(0);
 
 	/* Fortran FFLAGS macro */
 	if ((htb = htlookup(MFFLAGS, MDEFTABLE)) != NULL)
 		getI(htb->h_key, htb->h_def, F_INCDIR);
 	if (slappend(SYSINCLUDE, F_INCDIR) == NULL)
-		cleanup();
+		cleanup(0);
 
 	/* Pascal PFLAGS macro */
 	if ((htb = htlookup(MPFLAGS, MDEFTABLE)) != NULL)
 		getI(htb->h_key, htb->h_def, P_INCDIR);
 	if (slappend(SYSINCLUDE, P_INCDIR) == NULL)
-		cleanup();
+		cleanup(0);
 }
 
 
@@ -163,18 +166,13 @@ addincdir()
 #define ISYSINCLUDE(f) (strncmp(f, SYSINCLUDE, SYSINCLUDELEN) == 0)
 #define INCLUDETYPE(f) (LOCALDIR(f) ? INTERNAL : (ISYSINCLUDE(f) ? SYSTEM : EXTERNAL))
 
-int findinclude(incpath, incname, lastname, type)
-	char *incpath;			/* pathname receiving buffer */
-	register char *incname;		/* include file name */
-	char *lastname;			/* file that includes incname */
-	int type;			/* file type */
+int findinclude(char *incpath, char *incname, char *lastname, int type)
+// char *incpath;		/* pathname receiving buffer */
+// char *incname;		/* include file name */
+// char *lastname;		/* file that includes incname */
+// int type;			/* file type */
 {
-	register char *pp;		/* include file path pointer */
-	char *optpath();		/* optimize pathname */
-	char *pathcat();		/* pathname concatenation */
-	char *pathhead();		/* remove pathname tail */
-	char *strpcpy();		/* string copy and update pointer */
-	int applyrule();		/* apply transformation rules */
+	char *pp;		/* include file path pointer */
 	SLBLK *slb;			/* singly-linked list block */
 	SLIST *slist;			/* include directory list pointer */
 
@@ -258,15 +256,12 @@ int findinclude(incpath, incname, lastname, type)
  * a singly linked list.
  */
 void
-getI(mnam, mdef, slist)
-	char *mnam;			/* compiler options macro name */
-	char *mdef;			/* compiler options macro definition */
-	SLIST *slist;			/* singly-linked list */
+getI(char *mnam, char *mdef, SLIST *slist)
+// char *mnam;			/* compiler options macro name */
+// char *mdef;			/* compiler options macro definition */
+// SLIST *slist;		/* singly-linked list */
 {
-	char *getoption();		/* get next token */
 	char incpath[PATHSIZE];		/* include directory pathname buffer */
-	char *slappend();		/* append to singly-linked list */
-	int cleanup();			/* remove temporary makefile and exit */
 
 	while ((mdef = getoption(incpath, mdef, "-I")) != NULL)
 		{
@@ -278,7 +273,7 @@ getI(mnam, mdef, slist)
 		else	{
 			strcat(incpath, PATHSEP);
 			if (slappend(incpath, slist) == NULL)
-				cleanup();
+				cleanup(0);
 			}
 		}
 }
@@ -291,14 +286,14 @@ getI(mnam, mdef, slist)
  * distinguish it from an include file in a local directory. Returns
  * NO if syntax error, otherwise YES.
  */
-int getinclude(incname, curname, lineno, ifp)
-	char *curname;			/* current file name */
-	char *incname;			/* include file name receiving buffer */
-	int lineno;			/* current line number */
-	register FILE *ifp;		/* input stream */
+int getinclude(char *incname, char *curname, int lineno, FILE *ifp)
+// char *curname;	/* current file name */
+// char *incname;	/* include file name receiving buffer */
+// int lineno;		/* current line number */
+// FILE *ifp;		/* input stream */
 {
-	register char *ip;		/* include file name buffer pointer */
-	register int c;			/* current character */
+	char *ip;		/* include file name buffer pointer */
+	int c;			/* current character */
 
 	SKIPWHITESPACE(c, ifp);
 	for (ip = incname; (c = getc(ifp)) != EOF; ip++)
@@ -340,16 +335,15 @@ int getinclude(incname, curname, lineno, ifp)
  * or calls cleanup() if out of memory.
  */
 INCBLK *
-inclink(htb)
-	HASHBLK *htb;			/* hash table block pointer to save */
+inclink(HASHBLK *htb)
+// HASHBLK *htb;			/* hash table block pointer to save */
 {
 	INCBLK *iblk;			/* pointer to new include chain block */
-	int cleanup();			/* remove temporary makefile and exit */
 
 	if ((iblk = (INCBLK *) malloc(sizeof(INCBLK))) == NULL)
 		{
 		nocore();
-		cleanup();
+		cleanup(0);
 		}
 	iblk->i_loop = NO;
 	iblk->i_hblk = htb;
@@ -365,15 +359,12 @@ inclink(htb)
  * cleanup() if out of memory.
  */
 HASHBLK *
-instalinclude(incname, incpath, type)
-	char *incname;			/* name of include file */
-	char *incpath;			/* path to include file */
-	int type;			/* type of source file */
+instalinclude(char *incname, char *incpath, int type)
+// char *incname;			/* name of include file */
+// char *incpath;			/* path to include file */
+// int type;			/* type of source file */
 {
-	HASH *htinit();			/* initialize hash table */
 	HASHBLK *htb;			/* hash table block */
-	HASHBLK *htinstall();		/* install hash table entry */
-	int cleanup();			/* remove temporary makefile and exit */
 	int ilen;			/* include path length */
 
 	ilen = strlen(incpath);
@@ -412,7 +403,7 @@ instalinclude(incname, incpath, type)
 			break;
 		}
 	if (htb == NULL)
-		cleanup();
+		cleanup(0);
 	return(htb);
 }
 
@@ -423,12 +414,11 @@ instalinclude(incname, incpath, type)
  * corresponding to incname and type. Returns null if not found.
  */
 HASHBLK *
-lookupinclude(incname, type)
-	char *incname;			/* name of include file */
-	int type;			/* type of source file */
+lookupinclude(char *incname, int type)
+// char *incname;			/* name of include file */
+// int type;			/* type of source file */
 {
 	HASH *includetable;		/* include file hash table */
-	HASHBLK *htlookup();		/* find hash table entry */
 
 	switch (type)
 		{
@@ -458,25 +448,13 @@ lookupinclude(incname, type)
  * them to dependency list dlp. Returns a pointer to the dependency list.
  */
 DLIST *
-mkdepend()
+mkdepend(void)
 {
-	extern SLIST *SRCLIST;		/* source file name list */
 	char *suffix;			/* suffix pointer */
-	DLBLK *dlappend();		/* append dependency list */
-	DLIST *dlinit();		/* initialize dependency list */
 	DLIST *dlist;			/* dependency list */
 	INCBLK *ibp;			/* pointer to chain of include files */
-	INCBLK *readC();		/* read C include-style files */
-	INCBLK *readF();		/* read Fortran include-style files */
-	INCBLK *readP();		/* read Pascal include-style files */
-	int cleanup();			/* remove temporary makefile and exit */
-	int lookuptypeofinclude();	/* look up the brand of include */
-	int slsort();			/* sort singly-linked list */
 	int type;			/* source file type */
 	SLBLK *lbp;			/* list block pointer */
-	SLIST *slinit();		/* initialize singly-linked list */
-	void addincdir();		/* add to list of include directories */
-	void rmprinttag();		/* remove "already printed" tags */
 
 	/* initialize include file look-up lists */
 	C_INCDIR   = slinit();
@@ -517,11 +495,11 @@ mkdepend()
 		if (ibp != NULL)
 			{
 			if (dlappend(type, lbp, ibp, dlist) == NULL)
-				cleanup();
+				cleanup(0);
 			}
 		}
 	if (slsort(strcmp, EXTLIST) == NO || slsort(strcmp, SYSLIST) == NO)
-		cleanup();
+		cleanup(0);
 	return(dlist);
 }
 
@@ -531,10 +509,10 @@ mkdepend()
  * notfound() prints a "can't find" filename error message.
  */
 void
-notfound(curname, lineno, incname)
-	char *curname;			/* current file name */
-	char *incname;			/* name of include file */
-	int lineno;			/* current line number */
+notfound(char *curname, int lineno, char *incname)
+// char *curname;		/* current file name */
+// char *incname;		/* name of include file */
+// int lineno;			/* current line number */
 {
 	if (PGN != NULL && *PGN != '\0')
 		{
@@ -559,32 +537,23 @@ notfound(curname, lineno, incname)
  * hash table, or null if no include files found.
  */
 INCBLK *
-readC(lastfile, lastline, curname, type)
-	char *lastfile;			/* parent file name */
-	int lastline;			/* current line in parent file */
-	char *curname;			/* current file name */
-	int type;			/* file type */
+readC(char *lastfile, int lastline, char *curname, int type)
+// char *lastfile;			/* parent file name */
+// int lastline;			/* current line in parent file */
+// char *curname;			/* current file name */
+// int type;			/* file type */
 {
-	register char *p;		/* include string pointer */
-	register FILE *ifp;		/* input file stream */
-	register int c;			/* current character */
+	char *p;		/* include string pointer */
+	FILE *ifp;		/* input file stream */
+	int c;			/* current character */
 	char incname[PATHSIZE];		/* name of include file */
 	char incpath[PATHSIZE];		/* path to include file */
-	char *slappend();		/* append pathname to list */
-	FILE *fopen();			/* open file */
 	HASHBLK *ftb;			/* fromrule hash table entry block */
 	HASHBLK *htb;			/* hash table entry block */
-	HASHBLK *instalinclude();	/* install include name in hash table */
-	HASHBLK *lookupinclude();	/* look up include in hash table */
 	INCBLK *i_head = NULL;		/* head of include chain */
 	INCBLK *i_tail = NULL;		/* tail of include chain */
-	INCBLK *inclink();		/* link include file hash blocks */
-	int cleanup();			/* remove temporary makefile and exit */
-	int findinclude();		/* locate include file */
-	int getinclude();		/* get include name from input line */
 	int inctype;			/* origin of include file */
 	int lineno = 1;			/* current line number */
-	void notfound();		/* print "can't find" filename msg */
 
 	if ((ifp = fopen(curname, "r")) == NULL)
 		{
@@ -621,7 +590,7 @@ readC(lastfile, lastline, curname, type)
 				{
 				htb = instalinclude(incname, incpath, type);
 				if (slappend(incpath, SYSLIST) == NULL)
-					cleanup();
+					cleanup(0);
 				}
 			else if (inctype == SYSTEM && SYSHDRS == NO)
 				{
@@ -631,7 +600,7 @@ readC(lastfile, lastline, curname, type)
 				{
 				htb = instalinclude(incname, incpath, type);
 				if (slappend(incpath, EXTLIST) == NULL)
-					cleanup();
+					cleanup(0);
 				}
 			else if (inctype == FROMRULE)
 				{
@@ -672,32 +641,23 @@ nextline:	while (c != '\n' && c != EOF)
  * hash table, or null if no include files found.
  */
 INCBLK *
-readF(lastfile, lastline, curname, type)
-	char *lastfile;			/* parent file name */
-	int lastline;			/* current line in parent file */
-	char *curname;			/* current file name */
-	int type;			/* file type */
+readF(char *lastfile, int lastline, char *curname, int type)
+// char *lastfile;		/* parent file name */
+// int lastline;		/* current line in parent file */
+// char *curname;		/* current file name */
+// int type;			/* file type */
 {
-	register char *p;		/* include string pointer */
-	register FILE *ifp;		/* input file stream */
-	register int c;			/* current character */
+	char *p;		/* include string pointer */
+	FILE *ifp;		/* input file stream */
+	int c;			/* current character */
 	char incname[PATHSIZE];		/* name of include file */
 	char incpath[PATHSIZE];		/* path to include file */
-	char *slappend();		/* append pathname to list */
-	FILE *fopen();			/* open file */
 	HASHBLK *ftb;			/* fromrule hash table entry block */
 	HASHBLK *htb;			/* hash table entry block */
-	HASHBLK *instalinclude();	/* install include name in hash table */
-	HASHBLK *lookupinclude();	/* look up include in hash table */
 	INCBLK *i_head = NULL;		/* head of include chain */
 	INCBLK *i_tail = NULL;		/* tail of include chain */
-	INCBLK *inclink();		/* link include file hash blocks */
-	int cleanup();			/* remove temporary makefile and exit */
-	int findinclude();		/* locate include file */
-	int getinclude();		/* get include name from input line */
 	int inctype;			/* origin of include file */
 	int lineno = 1;			/* current line number */
-	void notfound();		/* print "can't find" filename msg */
 
 	if ((ifp = fopen(curname, "r")) == NULL)
 		{
@@ -733,7 +693,7 @@ readF(lastfile, lastline, curname, type)
 				{
 				htb = instalinclude(incname, incpath, type);
 				if (slappend(incpath, SYSLIST) == NULL)
-					cleanup();
+					cleanup(0);
 				}
 			else if (inctype == SYSTEM && SYSHDRS == NO)
 				{
@@ -743,7 +703,7 @@ readF(lastfile, lastline, curname, type)
 				{
 				htb = instalinclude(incname, incpath, type);
 				if (slappend(incpath, EXTLIST) == NULL)
-					cleanup();
+					cleanup(0);
 				}
 			else if (inctype == FROMRULE)
 				{
@@ -784,32 +744,23 @@ nextline:	while (c != '\n' && c != EOF)
  * hash table, or null if no include files found.
  */
 INCBLK *
-readP(lastfile, lastline, curname, type)
-	char *lastfile;			/* parent file name */
-	int lastline;			/* current line in parent file */
-	char *curname;			/* current file name */
-	int type;			/* file type */
+readP(char *lastfile, int lastline, char *curname, int type)
+// char *lastfile;		/* parent file name */
+// int lastline;		/* current line in parent file */
+// char *curname;		/* current file name */
+// int type;			/* file type */
 {
-	register char *p;		/* include string pointer */
-	register FILE *ifp;		/* input file stream */
-	register int c;			/* current character */
+	char *p;		/* include string pointer */
+	FILE *ifp;		/* input file stream */
+	int c;			/* current character */
 	char incname[PATHSIZE];		/* name of include file */
 	char incpath[PATHSIZE];		/* path to include file */
-	char *slappend();		/* append pathname to list */
-	FILE *fopen();			/* open file */
 	HASHBLK *ftb;			/* fromrule hash table entry block */
 	HASHBLK *htb;			/* hash table entry block */
-	HASHBLK *instalinclude();	/* install include name in hash table */
-	HASHBLK *lookupinclude();	/* look up include in hash table */
 	INCBLK *i_head = NULL;		/* head of include chain */
 	INCBLK *i_tail = NULL;		/* tail of include chain */
-	INCBLK *inclink();		/* link include file hash blocks */
-	int cleanup();			/* remove temporary makefile and exit */
-	int findinclude();		/* locate include file */
-	int getinclude();		/* get include name from input line */
 	int inctype;			/* origin of include file */
 	int lineno = 1;			/* current line number */
-	void notfound();		/* print "can't find" filename msg */
 
 	if ((ifp = fopen(curname, "r")) == NULL)
 		{
@@ -847,7 +798,7 @@ readP(lastfile, lastline, curname, type)
 				{
 				htb = instalinclude(incname, incpath, type);
 				if (slappend(incpath, SYSLIST) == NULL)
-					cleanup();
+					cleanup(0);
 				}
 			else if (inctype == SYSTEM && SYSHDRS == NO)
 				{
@@ -857,7 +808,7 @@ readP(lastfile, lastline, curname, type)
 				{
 				htb = instalinclude(incname, incpath, type);
 				if (slappend(incpath, EXTLIST) == NULL)
-					cleanup();
+					cleanup(0);
 				}
 			else if (inctype == FROMRULE)
 				{
@@ -893,7 +844,6 @@ nextline:	while (c != '\n' && c != EOF)
 int initsysinclude(void)
 {
 	HASHBLK *htb;			/* hash table entry block */
-	HASHBLK *htlookup();		/* find hash table entry */
 
 #ifdef _HasCompileSysType
 	if ((htb = htlookup(MCOMPILESYSTYPE, MDEFTABLE)) != NULL)

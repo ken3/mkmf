@@ -56,17 +56,23 @@
 
 extern SLIST *HEADLIST;			/* header file name list */
 extern SLIST *SRCLIST;			/* source file name list */
+extern SLIST *LIBLIST;			/* library pathname list */
+extern HASH  *MDEFTABLE;		/* macro definition table */
+extern int   MKSYMLINK;			/* make symbolic links to current dir ?*/
+extern int   AFLAG;			/* list .source files? */
+
+int libbuftolist(char*, SLIST*, SLIST*);
+void uniqsrcfile(int, int, SLBLK**);
+int uniqsrclist(void);
 
 /*
  * buftolist() copies the items from a buffer to a singly-linked list.
  * Returns integer YES if successful, otherwise NO.
  */
-int buftolist(buf, list)
-	char *buf;			/* item buffer */
-	SLIST *list;			/* receiving list */
+int buftolist(char *buf, SLIST *list)
+// char *buf;			/* item buffer */
+// SLIST *list;			/* receiving list */
 {
-	char *gettoken();		/* get next token */
-	char *slappend();		/* append file name to list */
 	char token[PATHSIZE];		/* item buffer */
 
 	while ((buf = gettoken(token, buf)) != NULL)
@@ -87,15 +93,9 @@ int buftolist(buf, list)
  */
 int buildliblist(void)
 {
-	char *getpath();		/* get next path */
-	char *getoption();		/* get library path option */
 	char *lp;			/* library path pointer */
 	char lpath[PATHSIZE];		/* library path buffer */
-	extern SLIST *LIBLIST;		/* library pathname list */
-	extern HASH *MDEFTABLE;		/* macro definition table */
 	HASHBLK *htb;			/* hash table block */
-	HASHBLK *htlookup();		/* find hash table entry */
-	int libbuftolist();		/* load library pathnames into list */
 	SLIST *libpathlist;		/* library directory search path */
 
 	/* create the library search path list */
@@ -161,20 +161,10 @@ int buildliblist(void)
  */
 int buildsrclist(void)
 {
-	extern HASH *MDEFTABLE;		/* macro definition table */
-	extern int MKSYMLINK;		/* make symbolic links to current dir ?*/
 	HASHBLK *headhtb;		/* HEADERS macro hash table block */
-	HASHBLK *htlookup();		/* find hash table entry */
 	HASHBLK *srchtb;		/* SOURCES macro hash table block */
-	int buftolist();		/* copy items from buffer to list */
-	int mksrclist();		/* compose a list of source files */
-	int mksymlink();		/* create symbolic source links */
 	int needhdr = 1;		/* need header file names */
 	int needsrc = 1;		/* need source file names */
-	int read_dir();			/* read dir for source and headers */
-	int slsort();			/* sort singly-linked list */
-	int uniqsrclist();		/* remove source dependencies */
-	SLIST *slinit();		/* initialize singly-linked list */
 
 	HEADLIST = slinit();
 	SRCLIST = slinit();
@@ -225,13 +215,12 @@ int buildsrclist(void)
  * pathname. Directories are searched for the library in the form libx.a.
  * An integer YES is returned if the library was found, otherwise NO.
  */
-int expandlibpath(libtoken, libpath, libpathlist)
-	char *libtoken;			/* library file option */
-	char *libpath;			/* library pathname */
-	SLIST *libpathlist;		/* library directory search path */
+int expandlibpath(char *libtoken, char *libpath, SLIST *libpathlist)
+// char *libtoken;			/* library file option */
+// char *libpath;			/* library pathname */
+// SLIST *libpathlist;		/* library directory search path */
 {
 	char *lp;			/* library pathname pointer */
-	char *strpcpy();		/* string copy and update pointer */
 	SLBLK *cblk;			/* current list block */
 
 	libtoken += 2;			/* skip -l option */
@@ -254,16 +243,13 @@ int expandlibpath(libtoken, libpath, libpathlist)
  * libbuftolist() appends each library pathname specified in libbuf to
  * the liblist library pathname list.
  */
-int libbuftolist(libmacrobuf, libpathlist, liblist)
-	char *libmacrobuf;		/* LIBS macro definition buffer */
-	SLIST *libpathlist;		/* library directory search path */
-	SLIST *liblist;			/* library pathname list */
+int libbuftolist(char *libmacrobuf, SLIST *libpathlist, SLIST *liblist)
+// char *libmacrobuf;		/* LIBS macro definition buffer */
+// SLIST *libpathlist;		/* library directory search path */
+// SLIST *liblist;			/* library pathname list */
 {
-	char *gettoken();		/* get next token */
 	char libpath[PATHSIZE];		/* library pathname */
 	char libtoken[PATHSIZE];	/* library file option */
-	char *slappend();		/* append file name to list */
-	int expandlibpath();		/* -lx -> full library pathname */
 
 	while ((libmacrobuf = gettoken(libtoken, libmacrobuf)) != NULL)
 		{
@@ -293,17 +279,15 @@ int libbuftolist(libmacrobuf, libpathlist, liblist)
  * to the source or header file name lists as appropriate. Returns
  * integer YES if successful, otherwise NO.
  */
-int read_dir(dirname, addfile, needsrc, needhdr)
-	char *dirname;			/* specified directory name */
-	int (*addfile)();		/* function for adding source files */
-	int needsrc;			/* need source file names */
-	int needhdr;			/* need header file names */
+int read_dir(char *dirname, int (*addfile)(char*, char*, int), int needsrc, int needhdr)
+// char *dirname;		/* specified directory name */
+// int (*addfile)()		/* function for adding source files */
+// int needsrc;			/* need source file names */
+// int needhdr;			/* need header file names */
 {
-	extern int AFLAG;		/* list .source files? */
 	char *suffix;			/* pointer to file name suffix */
 	DIR *dirp;			/* directory stream */
 	DIRENT *dp;			/* directory entry pointer */
-	int lookupsfx();		/* get suffix type */
 	int sfxtyp;			/* type of suffix */
 
 	if ((dirp = opendir(dirname)) == NULL)
@@ -354,15 +338,11 @@ int read_dir(dirname, addfile, needsrc, needhdr)
  */
 int uniqsrclist(void)
 {
-	extern SLIST *SRCLIST;		/* source file name list */
-	register int cbi;		/* current block vector index */
-	register int fbi;		/* first matching block vector index */
-	register int lbi;		/* last block vector index */
+	int cbi;		/* current block vector index */
+	int fbi;		/* first matching block vector index */
+	int lbi;		/* last block vector index */
 	uintptr_t length;		/* source file basename length */
-	SLBLK **slvect();		/* make linked list vector */
 	SLBLK **slv;			/* ptr to singly-linked list vector */
-	void slvtol();			/* convert vector to linked list */
-	void uniqsrcfile();		/* make source files dependency-free */
 
 	if ((slv = slvect(SRCLIST)) == NULL)
 		return(NO);
@@ -399,21 +379,18 @@ int uniqsrclist(void)
  * still maintained in the singly-linked list.
  */
 
-void
-uniqsrcfile(fbi, nb, slv)
-	register int fbi;		/* index to first matching block */
-	int nb;				/* number of blocks */
-	SLBLK **slv;			/* ptr to singly-linked list vector */
+void uniqsrcfile(int fbi, int nb, SLBLK **slv)
+// int fbi;	/* index to first matching block */
+// int nb;				/* number of blocks */
+// SLBLK **slv;			/* ptr to singly-linked list vector */
 {
-	register SLBLK *ibp;		/* block pointer (i-loop) */
-	register SLBLK *jbp;		/* block pointer (j-loop) */
-	register int i;			/* i-loop index */
-	register int j;			/* j-loop index */
+	SLBLK *ibp;		/* block pointer (i-loop) */
+	SLBLK *jbp;		/* block pointer (j-loop) */
+	int i;			/* i-loop index */
+	int j;			/* j-loop index */
 	char rule[2*SUFFIXSIZE+3];	/* rule buffer */
-	int lookuprule();		/* does source rule exist? */
 	int nu;				/* number of unique blocks */
 	SLBLK *fbp;			/* pointer to first block */
-	void makerule();		/* make a rule from two suffixes */
 
 	nu  = nb;
 	fbp = slv[fbi];

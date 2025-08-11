@@ -48,8 +48,8 @@
 #include "stringx.h"
 
 char *
-strsav(s)
-	char *s;
+strsav(char *s)
+// char *s;
 {
 	char *sptr;			/* somewhere string pointer */
 

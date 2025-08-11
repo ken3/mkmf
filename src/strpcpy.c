@@ -44,9 +44,9 @@
  * next character after s1.
  */
 char *
-strpcpy(s1, s2)
-	register char *s1;
-	register char *s2;
+strpcpy(char *s1, char *s2)
+// char *s1;
+// char *s2;
 {
 	while (*s1++ = *s2++)
 		continue;

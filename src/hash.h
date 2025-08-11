@@ -84,13 +84,13 @@ typedef struct _hash
 #define htkey(ht) ((ht)->thisblk->h_key)/* return key from current block */
 #define htdef(ht) ((ht)->thisblk->h_def)/* return definition from current block */
 #define htval(ht) ((ht)->thisblk->h_val)/* return value from current block */
-extern HASHBLK *htbrm();		/* remove hash table block */
-extern int hthash();			/* compute hash value */
-extern int htnext();			/* set hash table ptr to next block */
-extern HASH *htinit();			/* initialize hash table */
-extern HASHBLK *htinstall();		/* install hash table entry */
-extern HASHBLK *htlookup();		/* find hash table entry */
-extern void htrewind();			/* rewind hash table to first block */
-extern void htrm();			/* remove hash table entry */
+extern HASHBLK *htbrm(char *key, HASHBLK *htc);      /* remove hash table block */
+extern int hthash(char *s, HASH *hash);              /* compute hash value */
+extern int htnext(HASH *hash);                       /* set hash table ptr to next block */
+extern HASH *htinit(unsigned int hashsiz);           /* initialize hash table */
+extern HASHBLK *htinstall(char *key, char *def, int val, HASH *hash); /* install hash table entry */
+extern HASHBLK *htlookup(char *key, HASH *hash);     /* find hash table entry */
+extern void htrewind(HASH *hash);                    /* rewind hash table to first block */
+extern void htrm(char *key, HASH *hash);             /* remove hash table entry */
 #endif /* _HASH_H_INCLUDED */
 

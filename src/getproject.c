@@ -43,16 +43,16 @@
  * getproject() saves the contents of the PROJECT environment variable.
  * If the PROJECT variable is undefined or a null string, null is returned.
  */
+#include <stdlib.h>
+#include "Mkmf.h"
 #include "null.h"
 
 char *_PROJECT = NULL;			/* project root directory pathname */
 
 void
-getproject()
+getproject(void)
 {
-	register char *pv;		/* ptr to start of PROJECT variable */
-	char *getenv();			/* get environment variable */
-	char *strsav();			/* save a string somewhere */
+	char *pv;		/* ptr to start of PROJECT variable */
 
 	if ((pv = getenv("PROJECT")) != NULL && *pv != '\0')
 		_PROJECT = strsav(pv);

@@ -45,11 +45,11 @@
  */
 #include <stdio.h>
 
-void pperror(message)
-	char *message;			/* error message */
-{
-	extern char *PGN;		/* program name */
+extern char *PGN;			/* program name */
 
+void pperror(char *message)
+// char *message;			/* error message */
+{
 	if (message == NULL || *message == '\0')
 		{
 		perror(PGN);

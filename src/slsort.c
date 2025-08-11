@@ -52,12 +52,12 @@
 #include "slist.h"
 #include "yesno.h"
 
-static int comparb();			/* compare 2 list blocks */
-static int (*sscmp)();			/* string compare function */
+static int comparb(const void *s1, const void *s2);	/* compare 2 list blocks */
+static int (*sscmp)(const char*, const char*);	/* string compare function */
 
-int slsort(compar, slist)
-	int (*compar)();		/* compare two strings */
-	SLIST *slist;			/* pointer to list head block */
+int slsort(int (*compar)(const char*, const char*), SLIST *slist)
+// int (*compar)();		/* compare two strings */
+// SLIST *slist;		/* pointer to list head block */
 {
 	char **kp;			/* pointer to key pointer array */
 	char **skp;			/* ptr to start of key ptr array */
@@ -90,9 +90,11 @@ int slsort(compar, slist)
  * sscmp() returns. sscmp() is a string compare function.
  */
 static int
-comparb(s1, s2)
-	char **s1;			/* string pointer */
-	char **s2;			/* string pointer */
+comparb(const void *s1, const void *s2)
+// char **s1;			/* string pointer */
+// char **s2;			/* string pointer */
 {
-	return((*sscmp)(*s1, *s2));
+	char **a1 = (char **)s1;
+	char **a2 = (char **)s2;
+	return((*sscmp)(*a1, *a2));
 }

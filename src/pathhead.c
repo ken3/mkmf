@@ -47,11 +47,11 @@
 #include "path.h"
 
 char *
-pathhead(pathname)
-	char *pathname;
+pathhead(char *pathname)
+// char *pathname;
 {
-	register char *ls;		/* last separator character */
-	register char *p;		/* pathname pointer */
+	char *ls;		/* last separator character */
+	char *p;		/* pathname pointer */
 
 	ls = NULL;
 	for (p = pathname; *p != '\0'; p++)

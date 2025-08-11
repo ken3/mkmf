@@ -47,11 +47,11 @@
 /*
  * hthash() returns a hash value for string, s.
  */
-int hthash(s, hash)
-	char *s;		/* string */
-	HASH *hash;			/* hash table */
+int hthash(char *s, HASH *hash)
+// char *s;			/* string */
+// HASH *hash;		/* hash table */
 {
-	register int hashval;		/* hash value for string */
+	int hashval;		/* hash value for string */
 
 	for (hashval = 0; *s != '\0'; s++)
 		hashval += *s;
@@ -65,8 +65,8 @@ int hthash(s, hash)
  * out of memory.
  */
 HASH *
-htinit(hashsiz)
-	unsigned int hashsiz;		/* hash table size */
+htinit(unsigned int hashsiz)
+// unsigned int hashsiz;		/* hash table size */
 {
 	HASH *ht;			/* pointer to hash table struct */
 	HASHBLK **pt;			/* pointer to hash pointer table */
@@ -93,17 +93,14 @@ htinit(hashsiz)
  * a pointer to the entry, or null if out of memory.
  */
 HASHBLK *
-htinstall(key, def, val, hash)
-	char *key;			/* key for hash table entry */
-	char *def;			/* definition string */
-	int val;			/* integer value */
-	HASH *hash;			/* hash table */
+htinstall(char *key, char *def, int val, HASH *hash)
+// char *key;			/* key for hash table entry */
+// char *def;			/* definition string */
+// int val;				/* integer value */
+// HASH *hash;			/* hash table */
 {
-	char *strsav();			/* save string somewhere */
 	HASHBLK *htb;			/* hash table entry block */
-	HASHBLK *htlookup();		/* find hash table entry */
 	int hashval;			/* hash value for key */
-	int hthash();			/* calculate hash value */
 
 	if ((htb = htlookup(key, hash)) == NULL)
 		{			/* not found */
@@ -136,12 +133,11 @@ htinstall(key, def, val, hash)
  * htlookup() returns a pointer to a hash table entry if found, otherwise null.
  */
 HASHBLK *
-htlookup(key, hash)
-	char *key;			/* key for hash table entry */
-	HASH *hash;			/* hash table */
+htlookup(char *key, HASH *hash)
+// char *key;			/* key for hash table entry */
+// HASH *hash;			/* hash table */
 {
 	HASHBLK *htb;			/* hash table entry block */
-	int hthash();			/* calculate hash value */
 
 	for (htb = (hash->hashtab)[hthash(key, hash)]; htb != NULL; htb = htb->h_next)
 		if (EQUAL(htb->h_key, key))
@@ -156,14 +152,12 @@ htlookup(key, hash)
  * table is removed.
  */
 void
-htrm(key, hash)
-	char *key;			/* key for hash table entry */
-	HASH *hash;			/* hash table */
+htrm(char *key, HASH *hash)
+// char *key;			/* key for hash table entry */
+// HASH *hash;			/* hash table */
 {
-	HASHBLK *htbrm();		/* remove hash table block */
 	HASHBLK *htc;			/* first hash table block in chain */
 	int hashval;			/* hash value for key */
-	int hthash();			/* compute hash value */
 	int i;				/* hash table index */
 
 	if (key == NULL)
@@ -188,9 +182,9 @@ htrm(key, hash)
  * entire chain is removed. Returns a pointer to the first block in the chain.
  */
 HASHBLK *
-htbrm(key, htc)
-	char *key;			/* key string */
-	HASHBLK *htc;			/* hash table block chain */
+htbrm(char *key, HASHBLK *htc)
+// char *key;			/* key string */
+// HASHBLK *htc;		/* hash table block chain */
 {
 	HASHBLK *curblk;		/* current list block */
 	HASHBLK *nxtblk;		/* next list block */
@@ -247,10 +241,10 @@ htbrm(key, htc)
  * table block. Returns FALSE if no more blocks, otherwise TRUE.
  */
 int
-htnext(hash)
-	HASH *hash;			/* hash table */
+htnext(HASH *hash)
+// HASH *hash;			/* hash table */
 {
-	register int i;			/* hash table index */
+	int i;			/* hash table index */
 
 	if (hash->thisblk == NULL ||
 	   ((hash->thisblk = hash->thisblk->h_next) == NULL))
@@ -277,8 +271,8 @@ htnext(hash)
  * first element.
  */
 void
-htrewind(hash)
-	HASH *hash;			/* hash table */
+htrewind(HASH *hash)
+// HASH *hash;			/* hash table */
 {
 	hash->headblk = -1;
 	hash->thisblk = NULL;

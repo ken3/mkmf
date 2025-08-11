@@ -46,6 +46,8 @@
 #include "suffix.h"
 #include "yesno.h"
 
+extern char *DEFRULE[];			/* default preprocessor rules */
+
 static RULEBLK *Ruletab[RULETABSIZE];	/* rules table */
 static SLIST *Rulelist = NULL;		/* transformation rule list */
 
@@ -54,12 +56,12 @@ static SLIST *Rulelist = NULL;		/* transformation rule list */
  * checks to see if the file exists. Returns YES if filename exists,
  * otherwise NO.
  */
-int applyrule(target, source)
-	char *target;			/* name of (transformed) file */
-	char *source;			/* name of source file */
+int applyrule(char *target, char *source)
+// char *target;			/* name of (transformed) file */
+// char *source;			/* name of source file */
 {
-	register char *r;		/* rule pointer */
-	register char *s;		/* source buffer pointer */
+	char *r;		/* rule pointer */
+	char *s;		/* source buffer pointer */
 	char *sourcesuffix;		/* source file suffix */
 	char *rulesuffix;		/* target suffix in each rule */
 	char *targetsuffix;		/* transformed file suffix string */
@@ -102,9 +104,7 @@ int applyrule(target, source)
  */
 int buildruletable(void)
 {
-	extern char *DEFRULE[];		/* default preprocessor rules */
 	int i;				/* default rule list counter */
-	int instalrule();		/* install rule in hash table */
 	SLBLK *rblk;			/* singly-linked rulename block */
 
 	/* process default rules */
@@ -139,11 +139,11 @@ int buildruletable(void)
  * name of the transformation rule, or NULL if not found.
  */
 char *
-findrule(rulename, bp)
-	char *rulename;			/* transformation rule buffer */
-	register char *bp;		/* I/O buffer pointer */
-{ 
-	register char *rp;		/* rule name pointer */
+findrule(char *rulename, char *bp)
+// char *rulename;			/* transformation rule buffer */
+// char *bp;		/* I/O buffer pointer */
+{
+	char *rp;		/* rule name pointer */
 	int dotcount = 0;		/* number of '.'s in rule */
 
 	for (rp = rulename; *bp != ':' && *bp != ' ' && *bp != '\t'; rp++, bp++)
@@ -174,12 +174,10 @@ findrule(rulename, bp)
  * the target file is used by applyrule() to find out the name of the file
  * from which it was derived. Returns YES if successful, otherwise NO.
  */
-int instalrule(rule)
-	char *rule;			/* rule to be installed in Rule table */
+int instalrule(char *rule)
+// char *rule;			/* rule to be installed in Rule table */
 {
-	char *strsav();			/* save a string somewhere */
 	char *target;			/* target suffix */
-	int lookupsfx();		/* get suffix type */
 	int ruleindex;			/* index into rule table */
 	RULEBLK *rblk;			/* rule list block */
 
@@ -202,8 +200,8 @@ int instalrule(rule)
 /*
  * lookuprule() returns YES if rule exists, otherwise NO.
  */
-int lookuprule(rule)
-	char *rule;			/* .x.y rule to find */
+int lookuprule(char *rule)
+// char *rule;			/* .x.y rule to find */
 {
 	char *targetsuffix;		/* transformed file suffix string */
 	int ruleindex;			/* index into rule table */
@@ -229,10 +227,10 @@ int lookuprule(rule)
  * makerule() creates a rule from the suffixes of two file names.
  */
 void
-makerule(rule, source, target)
-	char *rule;			/* buffer to hold rule */
-	char *source;			/* source file name */
-	char *target;			/* target file name */
+makerule(char *rule, char *source, char *target)
+// char *rule;			/* buffer to hold rule */
+// char *source;			/* source file name */
+// char *target;			/* target file name */
 {
 	strcpy(rule, strrchr(source, '.'));
 	strcat(rule, strrchr(target, '.'));
@@ -244,12 +242,9 @@ makerule(rule, source, target)
  * storerule() appends a transformation rule to the end of a singly-linked
  * list. Returns integer NO if out of memory, otherwise YES.
  */
-int storerule(rulename)
-	char *rulename;			/* transformation rule name */
+int storerule(char *rulename)
+// char *rulename;			/* transformation rule name */
 {
-	char *slappend();		/* append rule to list */
-	SLIST *slinit();		/* initialize transformation list */
-
 	if (Rulelist == NULL)
 		Rulelist = slinit();
 	if (slappend(rulename, Rulelist) == NULL)
