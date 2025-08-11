@@ -45,14 +45,13 @@
  * returned.
  */
 #include "null.h"
+#include "Mkmf.h"
 
 extern char *_PROJECT;			/* project root directory pathname */
 
 char *
 getcwp(void)
 {
-	void getproject();		/* get PROJECT environment variable */
-
 	if (_PROJECT == NULL)
 		getproject();
 	return(_PROJECT);

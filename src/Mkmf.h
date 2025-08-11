@@ -54,39 +54,39 @@
 /*
  * Buffer sizes
  */
-#define ANSWERBUFSIZE		256	/* interactive answer buffer size */
-#define INCLUDETABLESIZE	1021	/* include file table size */
-#define SOURCETABLESIZE		1021	/* source file table size */
+#define ANSWERBUFSIZE		  256	/* interactive answer buffer size */
+#define INCLUDETABLESIZE	 1021	/* include file table size */
+#define SOURCETABLESIZE		 1021	/* source file table size */
 #define MACRODEFSIZE		16384	/* macro definition body size */
-#define MACRONAMSIZE		64	/* macro definition name size */
-#define MDEFTABLESIZE		127	/* macro definition table size */
-#define RULETABSIZE		256	/* rule table size */
-#define SFXTABSIZE		256	/* suffix table size */
-#define SUFFIXSIZE		16	/* suffix size */
+#define MACRONAMSIZE		   64	/* macro definition name size */
+#define MDEFTABLESIZE		  127	/* macro definition table size */
+#define RULETABSIZE	    	  256	/* rule table size */
+#define SFXTABSIZE		      256	/* suffix table size */
+#define SUFFIXSIZE		       16	/* suffix size */
 /*
  * Predefined macro names
  */
-#define MCXXFLAGS	"CXXFLAGS"	/* C++ flags macro for HP 'make'     */
-#define MCPXFLAGS	"C++FLAGS"      /* C++ flags macro for SYSVR4 'make' */
-#define MCCFLAGS	"CCFLAGS"       /* C++ flags macro for SunOS 'make'  */
-#define MCFLAGS		"CFLAGS"
-#define MCOMPILESYSTYPE	"COMPILESYSTYPE"
-#define MDESTDIR	"DEST"
-#define MEXTERNALS	"EXTHDRS"
-#define MFFLAGS		"FFLAGS"
-#define MHEADERS	"HDRS"
-#define MLDFLAGS	"LDFLAGS"
-#define MLIBLIST	"LIBS"
-#define MLIBRARY	"LIBRARY"
-#define MLPATH		"LPATH"
-#define MMAKEFILE	"MAKEFILE"
-#define MOBJECTS	"OBJS"
-#define MPFLAGS		"PFLAGS"
-#define MPROGRAM	"PROGRAM"
-#define MSOURCES	"SRCS"
-#define MSUFFIX		"SUFFIX"
-#define MSYSHDRS	"SYSHDRS"
-#define MVPATH		"VPATH"
+#define MCXXFLAGS	    "CXXFLAGS"	/* C++ flags macro for HP 'make'     */
+#define MCPXFLAGS	    "C++FLAGS"      /* C++ flags macro for SYSVR4 'make' */
+#define MCCFLAGS	    "CCFLAGS"       /* C++ flags macro for SunOS 'make'  */
+#define MCFLAGS		    "CFLAGS"
+#define MCOMPILESYSTYPE "COMPILESYSTYPE"
+#define MDESTDIR	    "DEST"
+#define MEXTERNALS	    "EXTHDRS"
+#define MFFLAGS		    "FFLAGS"
+#define MHEADERS	    "HDRS"
+#define MLDFLAGS	    "LDFLAGS"
+#define MLIBLIST	    "LIBS"
+#define MLIBRARY	    "LIBRARY"
+#define MLPATH		    "LPATH"
+#define MMAKEFILE	    "MAKEFILE"
+#define MOBJECTS	    "OBJS"
+#define MPFLAGS         "PFLAGS"
+#define MPROGRAM	    "PROGRAM"
+#define MSOURCES	    "SRCS"
+#define MSUFFIX		    "SUFFIX"
+#define MSYSHDRS	    "SYSHDRS"
+#define MVPATH		    "VPATH"
 /*
  * Predefined $(macro) instances
  */
@@ -136,7 +136,7 @@
 /*
  * Predefined macro values
  */
-#define VERROR		       -1
+#define VERROR		   -1
 #define VUNKNOWN		0
 #define VREADONLY		1
 #define VREADWRITE		2
@@ -154,8 +154,8 @@
  * Include statement styles
  */
 #define INCLUDE_NONE		0	/* no include file */
-#define INCLUDE_C		1	/* #include "file" */
-#define INCLUDE_CXX		2	/* #include "file" for C++ */
+#define INCLUDE_C		    1	/* #include "file" */
+#define INCLUDE_CXX		    2	/* #include "file" for C++ */
 #define INCLUDE_FORTRAN		3	/* include "file" or #include "file" */
 #define INCLUDE_PASCAL		4	/* #include "file" */
 /*
@@ -168,89 +168,128 @@
 #ifndef INSTALLDIR
 #  define INSTALLDIR	"/usr/contrib"
 #endif
-#define MKMFLIB		"lib/mkmf"
+#define MKMFLIB	    	"lib/mkmf"
 
-void warn(char*);
-void warns(char*, char*);
-void warn2(char*, char*, char*);
-void badopt(char, char);
-void usage(char*);
-void answer(char*, int);
-void nocore(void);
-int  storedynmacro(void);
-int  storenvmacro(void);
-int  buftolist(char*, SLIST*);
-int  buildliblist(void);
-int  buildsrclist(void);
-int  expandlibpath(char*, char*, SLIST*);
-int  libbuftolist(char*, SLIST*, SLIST*);
-int  read_dir(char*, int (*)(char*, char*, int), int, int);
-int  uniqsrclist(void);
-void addincdir(void);
-int findinclude(char*, char*, char*, int);
-void getI(char*, char*, SLIST*);
-int  getinclude(char*, char*, int, FILE*);
-INCBLK *inclink(HASHBLK*);
-HASHBLK *instalinclude(char*, char*, int);
-HASHBLK *lookupinclude(char*, int);
-DLIST *mkdepend(void);
-void notfound(char*, int, char *);
-INCBLK *readC(char*, int, char *, int);
-INCBLK *readF(char*, int, char *, int);
-INCBLK *readP(char*, int, char *, int);
-int  initsysinclude(void);
-int  findinclude(char*, char*, char*, int);
-int  getinclude(char*, char*, int, FILE*);
-int  hthash(char*, HASH*);
-int  storemacro(char*);
-int  fastcopy(char*, FILE*);
-int  findmf(char*, char*, TARGET*);
-void findmftemplate(char*, TARGET*);
-char *gettoken(char*, char*);
-char *getoption(char*, char*, char*);
-char *getpath(char*, char*);
-int  libobj(char*);
-char *mktname(char*, char*);
-void nocore(void);
-int  putobj(char*, FILE*);
-int  readmf(char*, TARGET*);
-int  mksrclist(int, int);
-int  addsrclist(char*, char*, int);
-char *pathcat(char*, char*, char*);
-int  mksymlink(int, int);
-char *pathhead(char*);
-int  applyrule(char*, char*);
-int  buildruletable(void);
-char *findrule(char*, char*);
-int  instalrule(char*);
-int  lookuprule(char*);
-void makerule(char*, char*, char*);
-int  storerule(char *rulename);
-int  slsort(int (*)(const char*, const char*), SLIST*);
-int  buildsfxtable(void);
-int  mapsuffixtokey(char*);
-int  installsfx(char*, int, char*);
-int  lookuptypeofinclude(char*);
-int  lookupsfx(char*);
-int  sfxbuftotable(char*);
-char *strpcpy(char*, char*);
-char *optpath(char*);
-FILE *mustfopen(char*, char*);
-char *getlin(FILE*);
-void purgcontinue(FILE*);
-void putlin(FILE*);
-char *findmacro(char*, char*);
-char *getmacro(char*, FILE*);
-void putmacro(char*, FILE*);
-void putobjmacro(FILE*);
-void putslmacro(SLIST*, FILE*);
-int storemacro(char*);
-int storenvmacro(void);
-int storedynmacro(void);
-char *strsav(char*);
-void pperror(char*);
-char *getcwp(void);
-void getproject(void);
+// badopt.c
+void  badopt(char, char);
+
+// buildlist.c
+int   buftolist(char*, SLIST*);
+int   buildliblist(void);
+int   buildsrclist(void);
+int   uniqsrclist(void);
+int   expandlibpath(char*, char*, SLIST*);
+int   libbuftolist(char*, SLIST*, SLIST*);
+int   read_dir(char*, int (*)(char*, char*, int), int, int);
+
+// depend.c
+void     addincdir(void);
+int      findinclude(char*, char*, char*, int);
+void     getI(char*, char*, SLIST*);
+int      getinclude(char*, char*, int, FILE*);
+INCBLK*  inclink(HASHBLK*);
+HASHBLK* instalinclude(char*, char*, int);
+HASHBLK* lookupinclude(char*, int);
+DLIST*   mkdepend(void);
+void     notfound(char*, int, char *);
+INCBLK*  readC(char*, int, char *, int);
+INCBLK*  readF(char*, int, char *, int);
+INCBLK*  readP(char*, int, char *, int);
+int      initsysinclude(void);
+
+// editmf.c
+void  editmf(char*, char*);
+
+// getcwp.c
+char* getcwp(void);
+
+// getproject.c
+void  getproject(void);
+
+// iolin.c
+char* getlin(FILE*);
+void  purgcontinue(FILE*);
+void  putlin(FILE*);
+
+// macro.c
+char* findmacro(char*, char*);
+char* getmacro(char*, FILE*);
+void  putmacro(char*, FILE*);
+void  putobjmacro(FILE*);
+void  putslmacro(SLIST*, FILE*);
+int   storemacro(char*);
+int   storenvmacro(void);
+int   storedynmacro(void);
+
+// misc.c
+void  answer(char*, int);
+int   fastcopy(char*, FILE*);
+int   findmf(char*, char*, TARGET*);
+void  findmftemplate(char*, TARGET*);
+char* gettoken(char*, char*);
+char* getoption(char*, char*, char*);
+char* getpath(char*, char*);
+int   libobj(char*);
+char* mktname(char*, char*);
+void  nocore(void);
+int   putobj(char*, FILE*);
+int   readmf(char*, TARGET*);
+
+// mksrclist.c
+int   mksrclist(int, int);
+int   addsrclist(char*, char*, int);
+
+// mksymlink.c
+int   mksymlink(int, int);
+
+// mustfopen.c
+FILE* mustfopen(char*, char*);
+
+// optpath.c
+char* optpath(char*);
+
+// pathcat.c
+char* pathcat(char*, char*, char*);
+
+// pathhead.c
+char* pathhead(char*);
+
+// pperror.c
+void  pperror(char*);
+
+// rule.c
+int   applyrule(char*, char*);
+int   buildruletable(void);
+char* findrule(char*, char*);
+int   instalrule(char*);
+int   lookuprule(char*);
+void  makerule(char*, char*, char*);
+int   storerule(char *rulename);
+
+// slsort.c
+int   slsort(int (*)(const char*, const char*), SLIST*);
+
+// strpcpy.c
+char* strpcpy(char*, char*);
+
+// strsav.c
+char* strsav(char*);
+
+// suffix.c
+int   buildsfxtable(void);
+int   installsfx(char*, int, char*);
+int   mapsuffixtokey(char*);
+int   lookuptypeofinclude(char*);
+int   lookupsfx(char*);
+int   sfxbuftotable(char*);
+
+// usage.c
+void  usage(char*);
+
+// warn.c
+void  warn(char*);
+void  warns(char*, char*);
+void  warn2(char*, char*, char*);
 
 #endif /* _MKMF_H_INCLUDED */
 

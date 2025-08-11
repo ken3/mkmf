@@ -84,6 +84,8 @@ MAPINCLUDE INCKEY[] =			/* include style lookup table */
 #include "inckey.h"
 	};
 
+void editmf(char *mfname, char *mfpath);		/* edit makefile */
+
 int main(int argc, char **argv)
 // int argc;
 // char **argv;
@@ -91,19 +93,9 @@ int main(int argc, char **argv)
 	char *mfname = NULL;		/* makefile name */
 	char mfpath[PATHSIZE];		/* makefile template pathname */
 	HASHBLK *htb;			/* hash table block */
-	HASHBLK *htinstall(char *key, char *def, int val, HASH *hash);		/* install hash table entry */
-	HASHBLK *htlookup(char *key, HASH *hash);		/* find hash table entry */
-	int buildliblist(void);		/* build list of library pathnames */
-	int buildruletable(void);		/* build table of preprocessor rules */
-	int buildsfxtable(void);		/* build table of suffixes */
-	int buildsrclist(void);		/* build list of source file names */
-	int findmf(char *mfname, char *mfpath, TARGET *target);		/* find makefile */
 	int status = 0;			/* exit status */
-	int storemacro(char *macdef);		/* store macro definition */
 	short iflag = NO;		/* interactive flag */
 	TARGET target;			/* type of makefile target */
-	void answer(char *mdefkey, int mdefval);		/* install answer in macro def table */
-	void editmf(char *mfname, char *mfpath);		/* edit makefile */
 
 	target.type = target.dest = VUNKNOWN;
 
