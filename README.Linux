@@ -1,0 +1,28 @@
+Howdy,
+
+This is the mkmf source from FreeBSD, I've made some very simple changes
+to get it to work under Linux.  It is set up to install under /usr/local,
+if you want to change this edit the INSTALLDIR variable in each Makefile.
+
+I didn't write the source code so I cannot help you with bugs, see the
+README file.  But if there is a mistake in the porting from FreeBSD to
+Linux then that _is_ my fault. :)
+
+Just type 'make install' to set things up, then read the man page on
+how to use it.  Good luck!
+
+-Michael Wilkinson
+mike@gas.physics.usu.edu
+
+---
+1999-11-02  Ken Tsukahara <k_tsuka@pic.melco.co.jp>
+
+(1) correct assignment/calculation between integer and pointer
+    modified file: buildlist.c
+
+(2) add #include <string.h>
+    modified file: buildlist.c
+
+(3) correct mktemp() argument
+    modified file: editmf.c
+
