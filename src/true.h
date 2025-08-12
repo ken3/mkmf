@@ -1,3 +1,5 @@
+#ifndef _TRUE_H_INCLUDED
+#define _TRUE_H_INCLUDED
 /*
  * Copyright (c) 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -45,3 +47,6 @@
 #ifndef FALSE
 #define FALSE 0
 #endif
+
+#endif // _TRUE_H_INCLUDED
+

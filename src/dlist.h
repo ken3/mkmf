@@ -1,3 +1,5 @@
+#ifndef _DLIST_H_INCLUDED
+#define _DLIST_H_INCLUDED
 /*
  * Copyright (c) 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -65,3 +67,6 @@ typedef struct _dlisthb
 extern DLBLK *dlappend(int srctyp, SLBLK *srcblk, INCBLK *incblk, DLIST *dlist); /* append to list */
 extern DLIST *dlinit(void);			/* initialize list */
 extern void dlprint(DLIST *dlist, FILE *ofp);	/* print list */
+
+#endif // _DLIST_H_INCLUDED
+

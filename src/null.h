@@ -1,3 +1,5 @@
+#ifndef _NULL_H_INCLUDED
+#define _NULL_H_INCLUDED
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -45,3 +47,6 @@
 #ifndef NULL
 #define NULL		0
 #endif
+
+#endif // _NULL_H_INCLUDED
+

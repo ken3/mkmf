@@ -1,3 +1,5 @@
+#ifndef _YESNO_H_INCLUDED
+#define _YESNO_H_INCLUDED
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -43,3 +45,6 @@
 
 #define YES 1
 #define NO  0
+
+#endif // _YESNO_H_INCLUDED
+

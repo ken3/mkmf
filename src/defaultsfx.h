@@ -1,3 +1,5 @@
+#ifndef _DEFAULTSFX_H_INCLUDED
+#define _DEFAULTSFX_H_INCLUDED
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -40,6 +42,7 @@
  *
  * Author: Peter J. Nicklin
  */
+
 ".c",   SFXSRC,  INCLUDE_C,	  "C",	 /* C */
 ".cc",  SFXSRC,  INCLUDE_CXX,	  "C++", /* C++ */
 ".cxx", SFXSRC,  INCLUDE_CXX,	  "C++", /* C++ */
@@ -59,3 +62,6 @@
 ".s",   SFXSRC,  INCLUDE_NONE,	   NULL, /* Assembler */
 ".y",   SFXSRC,  INCLUDE_C,	  "C",	 /* Yacc */
 NULL,   SFXNULL, INCLUDE_NONE,	   NULL	 /* mandatory last line */
+
+#endif // _DEFAULTSFX_H_INCLUDED
+

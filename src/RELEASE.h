@@ -1,3 +1,5 @@
+#ifndef _RELEASE_H_INCLUDED
+#define _RELEASE_H_INCLUDED
 /*
  * Copyright (c) 1991, 1993 Peter J. Nicklin.
  * Copyright (c) 1991, 1993 Version Technology.
@@ -41,4 +43,6 @@ static char *RCS_ID = "@(#) mkmf: $Revision: 4.11 $ $Date: 93/05/25 21:40:16 $ $
 static char *COPYRIGHT = "Copyright (c) 1983, 1985, 1991, 1993 Peter J. Nicklin, 1991, 1993 Version Technology, All Rights Reserved.";
 static char *RELEASEID = "@(#) mkmf: Release 4.11";
 #endif
+
+#endif // _RELEASE_H_INCLUDED
 
