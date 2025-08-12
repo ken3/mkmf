@@ -61,32 +61,32 @@
 #define MACRONAMSIZE		   64	/* macro definition name size */
 #define MDEFTABLESIZE		  127	/* macro definition table size */
 #define RULETABSIZE	    	  256	/* rule table size */
-#define SFXTABSIZE		      256	/* suffix table size */
-#define SUFFIXSIZE		       16	/* suffix size */
+#define SFXTABSIZE		  256	/* suffix table size */
+#define SUFFIXSIZE		   16	/* suffix size */
 /*
  * Predefined macro names
  */
-#define MCXXFLAGS	    "CXXFLAGS"	/* C++ flags macro for HP 'make'     */
-#define MCPXFLAGS	    "C++FLAGS"      /* C++ flags macro for SYSVR4 'make' */
-#define MCCFLAGS	    "CCFLAGS"       /* C++ flags macro for SunOS 'make'  */
-#define MCFLAGS		    "CFLAGS"
-#define MCOMPILESYSTYPE "COMPILESYSTYPE"
-#define MDESTDIR	    "DEST"
-#define MEXTERNALS	    "EXTHDRS"
-#define MFFLAGS		    "FFLAGS"
-#define MHEADERS	    "HDRS"
-#define MLDFLAGS	    "LDFLAGS"
-#define MLIBLIST	    "LIBS"
-#define MLIBRARY	    "LIBRARY"
-#define MLPATH		    "LPATH"
-#define MMAKEFILE	    "MAKEFILE"
-#define MOBJECTS	    "OBJS"
-#define MPFLAGS         "PFLAGS"
-#define MPROGRAM	    "PROGRAM"
-#define MSOURCES	    "SRCS"
-#define MSUFFIX		    "SUFFIX"
-#define MSYSHDRS	    "SYSHDRS"
-#define MVPATH		    "VPATH"
+#define MCXXFLAGS	"CXXFLAGS"	    /* C++ flags macro for HP 'make'     */
+#define MCPXFLAGS	"C++FLAGS"      /* C++ flags macro for SYSVR4 'make' */
+#define MCCFLAGS	"CCFLAGS"       /* C++ flags macro for SunOS 'make'  */
+#define MCFLAGS		"CFLAGS"
+#define MCOMPILESYSTYPE	"COMPILESYSTYPE"
+#define MDESTDIR	"DEST"
+#define MEXTERNALS	"EXTHDRS"
+#define MFFLAGS		"FFLAGS"
+#define MHEADERS	"HDRS"
+#define MLDFLAGS	"LDFLAGS"
+#define MLIBLIST	"LIBS"
+#define MLIBRARY	"LIBRARY"
+#define MLPATH		"LPATH"
+#define MMAKEFILE	"MAKEFILE"
+#define MOBJECTS	"OBJS"
+#define MPFLAGS		"PFLAGS"
+#define MPROGRAM	"PROGRAM"
+#define MSOURCES	"SRCS"
+#define MSUFFIX		"SUFFIX"
+#define MSYSHDRS	"SYSHDRS"
+#define MVPATH		"VPATH"
 /*
  * Predefined $(macro) instances
  */
@@ -136,7 +136,7 @@
 /*
  * Predefined macro values
  */
-#define VERROR		   -1
+#define VERROR		       -1
 #define VUNKNOWN		0
 #define VREADONLY		1
 #define VREADWRITE		2
@@ -154,8 +154,8 @@
  * Include statement styles
  */
 #define INCLUDE_NONE		0	/* no include file */
-#define INCLUDE_C		    1	/* #include "file" */
-#define INCLUDE_CXX		    2	/* #include "file" for C++ */
+#define INCLUDE_C		1	/* #include "file" */
+#define INCLUDE_CXX		2	/* #include "file" for C++ */
 #define INCLUDE_FORTRAN		3	/* include "file" or #include "file" */
 #define INCLUDE_PASCAL		4	/* #include "file" */
 /*
@@ -168,7 +168,7 @@
 #ifndef INSTALLDIR
 #  define INSTALLDIR	"/usr/contrib"
 #endif
-#define MKMFLIB	    	"lib/mkmf"
+#define MKMFLIB		"lib/mkmf"
 
 // badopt.c
 void  badopt(char, char);
