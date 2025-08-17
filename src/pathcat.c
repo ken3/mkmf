@@ -58,26 +58,22 @@ pathcat(char *p1_p2, char *p1, char *p2)
 	char *sp1_p2;			/* start of p1_p2 */
 
 	sp1_p2 = p1_p2;
-	for (plen = PATHSIZE; plen > 0; plen--, p1_p2++, p1++)
-		if ((*p1_p2 = *p1) == '\0')
-			break;
-	if (*p2 != '\0' && plen > 0)
-		{
-		if (p1_p2 != sp1_p2 && p1_p2[-1] != _PSC)
-			{
+	for (plen = PATHSIZE; plen > 0; plen--, p1_p2++, p1++) {
+		if ((*p1_p2 = *p1) == '\0') break;
+	}
+	if (*p2 != '\0' && plen > 0) {
+		if (p1_p2 != sp1_p2 && p1_p2[-1] != _PSC) {
 			*p1_p2++ = _PSC;
 			plen--;
-			}
-		for (; plen > 0; plen--, p1_p2++, p2++)
-			if ((*p1_p2 = *p2) == '\0')
-				break;
 		}
-	if (plen == 0)
-		{
+		for (; plen > 0; plen--, p1_p2++, p2++) {
+			if ((*p1_p2 = *p2) == '\0') break;
+		}
+	}
+	if (plen == 0) {
 		*--p1_p2 = '\0';
-		if (*PGN != '\0')
-			fprintf(stderr, "%s: ", PGN);
+		if (*PGN != '\0') fprintf(stderr, "%s: ", PGN);
 		fprintf(stderr, "pathname too long\n");
-		}
-	return(sp1_p2);
+	}
+	return sp1_p2;
 }

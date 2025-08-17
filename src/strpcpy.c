@@ -48,7 +48,6 @@ strpcpy(char *s1, char *s2)
 // char *s1;
 // char *s2;
 {
-	while (*s1++ = *s2++)
-		continue;
-	return(--s1);
+	while (*s1++ = *s2++) continue;
+	return --s1;
 }

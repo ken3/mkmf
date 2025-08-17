@@ -68,32 +68,27 @@ int applyrule(char *target, char *source)
 	int ruleindex;			/* index into rule table */
 	RULEBLK *rblk;			/* rule list block */
 
-	if ((targetsuffix = strrchr(target, '.')) == NULL)
-		return(NO);
+	if ((targetsuffix = strrchr(target, '.')) == NULL) return NO;
 	ruleindex = targetsuffix[1];
-	if (Ruletab[ruleindex] != NULL)
-		{
+	if (Ruletab[ruleindex] != NULL) {
 		strcpy(source, target);
 		sourcesuffix = strrchr(source, '.');
-		for (rblk=Ruletab[ruleindex]; rblk != NULL; rblk=rblk->r_next)
-			{
+		for (rblk=Ruletab[ruleindex]; rblk != NULL; rblk=rblk->r_next) {
 			rulesuffix = strrchr(rblk->r_rule, '.');
-			if (strcmp(rulesuffix, targetsuffix) == 0)
-				{
+			if (strcmp(rulesuffix, targetsuffix) == 0) {
 				r = rblk->r_rule;
 				s = sourcesuffix;
-				while (*++s = *++r)
-					if (*s == '.')
-						{
+				while (*++s = *++r) {
+					if (*s == '.') {
 						*s = '\0';
 						break;
-						}
-				if (FILEXIST(source))
-					return(YES);
+					}
 				}
+				if (FILEXIST(source)) return YES;
 			}
 		}
-	return(NO);
+	}
+	return NO;
 }
 
 
@@ -108,28 +103,23 @@ int buildruletable(void)
 	SLBLK *rblk;			/* singly-linked rulename block */
 
 	/* process default rules */
-	for (i = 0; DEFRULE[i] != NULL; i++)
-		{
-		if (instalrule(DEFRULE[i]) == NO)
-			{
+	for (i = 0; DEFRULE[i] != NULL; i++) {
+		if (instalrule(DEFRULE[i]) == NO) {
 			nocore();
-			return(NO);
-			}
+			return NO;
 		}
+	}
 
 	/* process rules found in makefile */
-	if (Rulelist != NULL)
-		{
-		for (rblk = Rulelist->head; rblk != NULL; rblk = rblk->next)
-			{
-			if (instalrule(rblk->key) == NO)
-				{
+	if (Rulelist != NULL) {
+		for (rblk = Rulelist->head; rblk != NULL; rblk = rblk->next) {
+			if (instalrule(rblk->key) == NO) {
 				nocore();
-				return(NO);
-				}
+				return NO;
 			}
 		}
-	return(YES);
+	}
+	return YES;
 }
 
 
@@ -146,23 +136,18 @@ findrule(char *rulename, char *bp)
 	char *rp;		/* rule name pointer */
 	int dotcount = 0;		/* number of '.'s in rule */
 
-	for (rp = rulename; *bp != ':' && *bp != ' ' && *bp != '\t'; rp++, bp++)
-		{
-		if ((*rp = *bp) == '.')
-			dotcount++;
-		}
+	for (rp = rulename; *bp != ':' && *bp != ' ' && *bp != '\t'; rp++, bp++) {
+		if ((*rp = *bp) == '.') dotcount++;
+	}
 	*rp = '\0';
 
 	/* eat up white space between rule and ':' */
-	if (*bp != ':')
-		{
-		while (*bp == ' ' || *bp == '\t')
-			bp++;
-		if (*bp != ':')
-			return(NULL);
-		}
+	if (*bp != ':') {
+		while (*bp == ' ' || *bp == '\t') bp++;
+		if (*bp != ':') return NULL;
+	}
 
-	return((dotcount == 2) ? rulename : NULL);
+	return (dotcount == 2) ? rulename : NULL;
 }
 
 
@@ -182,17 +167,14 @@ int instalrule(char *rule)
 	RULEBLK *rblk;			/* rule list block */
 
 	target = strrchr(rule, '.') + 1;
-	if (lookupsfx(target) == SFXSRC)
-		{
+	if (lookupsfx(target) == SFXSRC) {
 		ruleindex = target[0];
-		if ((rblk = (RULEBLK *) malloc(sizeof(RULEBLK))) == NULL)
-			return(NO);
-		if ((rblk->r_rule = strsav(rule)) == NULL)
-			return(NO);
+		if ((rblk = (RULEBLK *) malloc(sizeof(RULEBLK))) == NULL) return NO;
+		if ((rblk->r_rule = strsav(rule)) == NULL) return NO;
 		rblk->r_next = Ruletab[ruleindex];
 		Ruletab[ruleindex] = rblk;
-		}
-	return(YES);
+	}
+	return YES;
 }
 
 
@@ -207,18 +189,14 @@ int lookuprule(char *rule)
 	int ruleindex;			/* index into rule table */
 	RULEBLK *rblk;			/* rule list block */
 
-	if ((targetsuffix = strrchr(rule, '.')) == NULL)
-		return(NO);
+	if ((targetsuffix = strrchr(rule, '.')) == NULL) return NO;
 	ruleindex = targetsuffix[1];
-	if (Ruletab[ruleindex] != NULL)
-		{
-		for (rblk=Ruletab[ruleindex]; rblk != NULL; rblk=rblk->r_next)
-			{
-			if (strcmp(rule, rblk->r_rule) == 0)
-				return(YES);
-			}
+	if (Ruletab[ruleindex] != NULL) {
+		for (rblk=Ruletab[ruleindex]; rblk != NULL; rblk=rblk->r_next) {
+			if (strcmp(rule, rblk->r_rule) == 0) return YES;
 		}
-	return(NO);
+	}
+	return NO;
 }
 
 
@@ -245,9 +223,7 @@ makerule(char *rule, char *source, char *target)
 int storerule(char *rulename)
 // char *rulename;			/* transformation rule name */
 {
-	if (Rulelist == NULL)
-		Rulelist = slinit();
-	if (slappend(rulename, Rulelist) == NULL)
-		return(NO);
-	return(YES);
+	if (Rulelist == NULL) Rulelist = slinit();
+	if (slappend(rulename, Rulelist) == NULL) return NO;
+	return YES;
 }

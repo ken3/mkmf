@@ -50,8 +50,7 @@ extern char *PGN;			/* program name */
 void warn(char *m)
 // char *m;			/* warning message */
 {
-	if (PGN != NULL && *PGN != '\0')
-		fprintf(stderr, "%s: ", PGN);
+	if (PGN != NULL && *PGN != '\0') fprintf(stderr, "%s: ", PGN);
 	fprintf(stderr, "%s\n", m);
 	return;
 }
@@ -66,10 +65,10 @@ void warns(char *m, char *s)
 // char *m;			/* warning message */
 // char *s;			/* string argument */
 {
-	if (PGN != NULL && *PGN != '\0')
-		fprintf(stderr, "%s: ", PGN);
+	if (PGN != NULL && *PGN != '\0') fprintf(stderr, "%s: ", PGN);
 	fprintf(stderr, m, s);
 	fprintf(stderr, "\n");
+	return;
 }
 
 
@@ -83,8 +82,8 @@ void warn2(char *m, char *s1, char *s2)
 // char *s1;			/* string argument */
 // char *s2;			/* string argument */
 {
-	if (PGN != NULL && *PGN != '\0')
-		fprintf(stderr, "%s: ", PGN);
+	if (PGN != NULL && *PGN != '\0') fprintf(stderr, "%s: ", PGN);
 	fprintf(stderr, m, s1, s2);
 	fprintf(stderr, "\n");
+	return;
 }

@@ -1,5 +1,6 @@
 #ifndef _RULE_H_INCLUDED
 #define _RULE_H_INCLUDED
+
 /*
  * Copyright (c) 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -46,11 +47,21 @@
 /*
  * Rule table block struct
  */
-typedef struct _ruleblk
-	{
+typedef struct _ruleblk {
 	char *r_rule;			/* pointer to rule string */
 	struct _ruleblk *r_next;	/* ptr to next rule list block */
-	} RULEBLK;
+} RULEBLK;
 
-#endif // _RULE_H_INCLUDED
+/*
+ * Functions defined in rule.c
+ */
+int   applyrule(char*, char*);
+int   buildruletable(void);
+char* findrule(char*, char*);
+int   instalrule(char*);
+int   lookuprule(char*);
+void  makerule(char*, char*, char*);
+int   storerule(char *rulename);
+
+#endif /* _RULE_H_INCLUDED */
 

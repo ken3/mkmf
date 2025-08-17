@@ -53,9 +53,10 @@ int hthash(char *s, HASH *hash)
 {
 	int hashval;		/* hash value for string */
 
-	for (hashval = 0; *s != '\0'; s++)
+	for (hashval = 0; *s != '\0'; s++) {
 		hashval += *s;
-	return(hashval % hash->hashsiz);
+	}
+	return (hashval % hash->hashsiz);
 }
 
 
@@ -72,17 +73,16 @@ htinit(unsigned int hashsiz)
 	HASHBLK **pt;			/* pointer to hash pointer table */
 
 	if ((ht = (HASH *) malloc(sizeof(HASH))) == NULL ||
-	    (pt = (HASHBLK **) calloc(hashsiz, sizeof(HASHBLK *))) == NULL)
-		{
+	    (pt = (HASHBLK **) calloc(hashsiz, sizeof(HASHBLK *))) == NULL) {
 		nocore();
-		return(NULL);
-		}
+		return NULL;
+	}
 	ht->hashtab = pt;
 	ht->headblk = -1;
 	ht->thisblk = NULL;
 	ht->hashsiz = hashsiz;
 	ht->nk = 0;
-	return(ht);
+	return ht;
 }
 
 
@@ -102,29 +102,25 @@ htinstall(char *key, char *def, int val, HASH *hash)
 	HASHBLK *htb;			/* hash table entry block */
 	int hashval;			/* hash value for key */
 
-	if ((htb = htlookup(key, hash)) == NULL)
-		{			/* not found */
-		if ((htb = (HASHBLK *) malloc(sizeof(HASHBLK))) == NULL)
-			return(NULL);
-		if ((htb->h_key = strsav(key)) == NULL)
-			return(NULL);
+	if ((htb = htlookup(key, hash)) == NULL) {	/* not found */
+		if ((htb = (HASHBLK *) malloc(sizeof(HASHBLK))) == NULL) return(NULL);
+		if ((htb->h_key = strsav(key)) == NULL) return(NULL);
 		hashval = hthash(key, hash);
 		htb->h_next = (hash->hashtab)[hashval];
 		hash->thisblk = (hash->hashtab)[hashval] = htb;
 		htb->h_sub = NULL;
 		htb->h_tag = NULL;
-		}
-	else	{			/* found: free previous definition */
-		if (htb->h_def != NULL)
-			free(htb->h_def);
-		}
-	if (def == NULL)
+	} else {		/* found: free previous definition */
+		if (htb->h_def != NULL) free(htb->h_def);
+	}
+	if (def == NULL) {
 		htb->h_def = NULL;
-	else if ((htb->h_def = strsav(def)) == NULL)
+	} else if ((htb->h_def = strsav(def)) == NULL) {
 		return(NULL);
+	}
 	htb->h_val = val;
 	hash->nk++;
-	return(htb);
+	return htb;
 }
 
 
@@ -139,10 +135,10 @@ htlookup(char *key, HASH *hash)
 {
 	HASHBLK *htb;			/* hash table entry block */
 
-	for (htb = (hash->hashtab)[hthash(key, hash)]; htb != NULL; htb = htb->h_next)
-		if (EQUAL(htb->h_key, key))
-			return(hash->thisblk = htb);	/* found */
-	return(hash->thisblk = NULL);			/* not found */
+	for (htb = (hash->hashtab)[hthash(key, hash)]; htb != NULL; htb = htb->h_next) {
+		if (EQUAL(htb->h_key, key)) return (hash->thisblk = htb);	/* found */
+	}
+	return (hash->thisblk = NULL);			/* not found */
 }
 
 
@@ -160,19 +156,16 @@ htrm(char *key, HASH *hash)
 	int hashval;			/* hash value for key */
 	int i;				/* hash table index */
 
-	if (key == NULL)
-		{
-		for (i = 0; i < hash->hashsiz; i++)
-			if ((htc = (hash->hashtab)[i]) != NULL)
-				(void) htbrm(key, htc);
+	if (key == NULL) {
+		for (i = 0; i < hash->hashsiz; i++) {
+			if ((htc = (hash->hashtab)[i]) != NULL) (void) htbrm(key, htc);
+		}
 		free((char *) hash);
-		}
-	else	{
+	} else {
 		hashval = hthash(key, hash);
-		if ((htc = (hash->hashtab)[hashval]) != NULL)
-			(hash->hashtab)[hashval] = htbrm(key, htc);
+		if ((htc = (hash->hashtab)[hashval]) != NULL) (hash->hashtab)[hashval] = htbrm(key, htc);
 		hash->nk--;
-		}
+	}
 }
 
 
@@ -190,48 +183,42 @@ htbrm(char *key, HASHBLK *htc)
 	HASHBLK *nxtblk;		/* next list block */
 	HASHBLK *prvblk;		/* previous list block */
 
-	if (key == NULL)
-		while (htc != NULL)
-			{
+	if (key == NULL) {
+		while (htc != NULL) {
 			nxtblk = htc->h_next;
 			free(htc->h_key);
 			if (htc->h_def != NULL)
 				free(htc->h_def);
 			free((char *) htc);
 			htc = nxtblk;
-			}
-	else	{
+		}
+	} else {
 		/* first block is a special case */
-		if (EQUAL(htc->h_key, key))
-			{
+		if (EQUAL(htc->h_key, key)) {
 			nxtblk = htc->h_next;
 			free(htc->h_key);
-			if (htc->h_def != NULL)
-				free(htc->h_def);
+			if (htc->h_def != NULL) free(htc->h_def);
 			free((char *) htc);
 			htc = nxtblk;
-			}
-		else	{
+		} else {
 			/* remainder of list */
 			prvblk = htc;
 			curblk = htc->h_next;
-			while (curblk != NULL)
-				if (EQUAL(curblk->h_key, key))
-					{
+			while (curblk != NULL) {
+				if (EQUAL(curblk->h_key, key)) {
 					prvblk->h_next = curblk->h_next;
 					free(curblk->h_key);
-					if (htc->h_def != NULL)
-						free(curblk->h_def);
+					if (htc->h_def != NULL) free(curblk->h_def);
 					free((char *) curblk);
 					break;
-					}
-				else	{
+				} else {
 					prvblk = curblk;
 					curblk = curblk->h_next;
-					}
+				}
 			}
 		}
-	return(htc);
+	}
+	return htc;
 }
 
 
@@ -247,19 +234,16 @@ htnext(HASH *hash)
 	int i;			/* hash table index */
 
 	if (hash->thisblk == NULL ||
-	   ((hash->thisblk = hash->thisblk->h_next) == NULL))
-		{
-		for (i = hash->headblk+1; i < hash->hashsiz; i++)
-			{
-			if ((hash->hashtab)[i] != NULL)
-				{
+	   ((hash->thisblk = hash->thisblk->h_next) == NULL)) {
+		for (i = hash->headblk+1; i < hash->hashsiz; i++) {
+			if ((hash->hashtab)[i] != NULL) {
 				  hash->thisblk = (hash->hashtab)[i];
 				  break;
-				}
 			}
-		hash->headblk = i;
 		}
-	return((hash->thisblk != NULL) ? TRUE : FALSE);
+		hash->headblk = i;
+	}
+	return ((hash->thisblk != NULL) ? TRUE : FALSE);
 }
 
 
@@ -276,4 +260,5 @@ htrewind(HASH *hash)
 {
 	hash->headblk = -1;
 	hash->thisblk = NULL;
+	return;
 }

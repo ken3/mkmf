@@ -48,49 +48,51 @@
  * Singly-linked list block containing a pointer to a hash table
  * block for an include file
  */
-typedef struct _iblk
-	{
+typedef struct _iblk {
 	int i_loop;
 	struct _hblk *i_hblk;
 	struct _iblk *i_next;
-	} INCBLK;
+} INCBLK;
+
 /*
  * Hash table block
  */
-typedef struct _hblk
-	{
+typedef struct _hblk {
 	char *h_key;			/* points to key */
 	char *h_def;			/* points to definition string */
 	int h_val;			/* integer value */
 	struct _iblk *h_sub;		/* ptr to include subchain */
 	struct _hblk *h_tag;		/* ptr to auxiliary tag chain */
 	struct _hblk *h_next;		/* ptr to next block */
-	} HASHBLK;
+} HASHBLK;
+
 /*
  * Hash pointer table struct
  */
-typedef struct _hash
-	{
+typedef struct _hash {
 	HASHBLK **hashtab;		/* hash pointer table */
 	HASHBLK *thisblk;		/* current hash table block */
 	int headblk;			/* index of head of block chain */
 	int hashsiz;			/* hash table size */
 	int nk;				/* number of keys in table */
-	} HASH;
+} HASH;
+
 /*
  * Functions defined for hash tables
  */
-#define htnum(ht) ((ht)->nk)		/* return number of keys in table */
-#define htkey(ht) ((ht)->thisblk->h_key)/* return key from current block */
-#define htdef(ht) ((ht)->thisblk->h_def)/* return definition from current block */
-#define htval(ht) ((ht)->thisblk->h_val)/* return value from current block */
-extern HASHBLK *htbrm(char *key, HASHBLK *htc);      /* remove hash table block */
-extern int hthash(char *s, HASH *hash);              /* compute hash value */
-extern int htnext(HASH *hash);                       /* set hash table ptr to next block */
-extern HASH *htinit(unsigned int hashsiz);           /* initialize hash table */
-extern HASHBLK *htinstall(char *key, char *def, int val, HASH *hash); /* install hash table entry */
-extern HASHBLK *htlookup(char *key, HASH *hash);     /* find hash table entry */
-extern void htrewind(HASH *hash);                    /* rewind hash table to first block */
-extern void htrm(char *key, HASH *hash);             /* remove hash table entry */
+#define htnum(ht) ((ht)->nk)		 /* return number of keys in table */
+#define htkey(ht) ((ht)->thisblk->h_key) /* return key from current block */
+#define htdef(ht) ((ht)->thisblk->h_def) /* return definition from current block */
+#define htval(ht) ((ht)->thisblk->h_val) /* return value from current block */
+
+HASHBLK* htbrm(char*, HASHBLK*);              /* remove hash table block */
+int      hthash(char*, HASH*);                /* compute hash value */
+int      htnext(HASH*);                       /* set hash table ptr to next block */
+HASH*    htinit(unsigned int);                /* initialize hash table */
+HASHBLK* htinstall(char*, char*, int, HASH*); /* install hash table entry */
+HASHBLK* htlookup(char*, HASH*);              /* find hash table entry */
+void     htrewind(HASH*);                     /* rewind hash table to first block */
+void     htrm(char*, HASH*);                  /* remove hash table entry */
+
 #endif /* _HASH_H_INCLUDED */
 

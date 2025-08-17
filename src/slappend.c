@@ -59,22 +59,21 @@ slappend(char *key, SLIST *slist)
 	SLBLK *slbptr;			/* pointer to list block */
 	unsigned int klen;		/* key length */
 
-	if (slist == NULL)
-		return(NULL);
+	if (slist == NULL) return NULL;
 	klen = strlen(key);
 	slist->maxkey = MAX(slist->maxkey, klen);
 	if ((slbptr = (SLBLK *) malloc(sizeof(SLBLK))) == NULL ||
-	    (slbptr->key = malloc(klen+1)) == NULL)
-		{
+	    (slbptr->key = malloc(klen+1)) == NULL) {
 		nocore();
-		return(NULL);
-		}
+		return NULL;
+	}
 	strcpy(slbptr->key, key);
 	slbptr->next = NULL;
-	if (slist->tail == NULL)
+	if (slist->tail == NULL) {
 		slist->head = slist->tail = slbptr;
-	else
+	} else {
 		slist->tail = slist->tail->next = slbptr;
+	}
 	slist->nk++;
-	return(slbptr->key);
+	return slbptr->key;
 }

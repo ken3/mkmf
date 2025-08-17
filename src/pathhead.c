@@ -54,9 +54,9 @@ pathhead(char *pathname)
 	char *p;		/* pathname pointer */
 
 	ls = NULL;
-	for (p = pathname; *p != '\0'; p++)
-		if (*p == _PSC)
-			ls = p;
+	for (p = pathname; *p != '\0'; p++) {
+		if (*p == _PSC) ls = p;
+	}
 	if (ls != NULL) *ls = '\0';
-	return(pathname);
+	return pathname;
 }

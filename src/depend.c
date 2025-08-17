@@ -48,8 +48,10 @@
 #include "macro.h"
 #include "null.h"
 #include "path.h"
+#include "rule.h"
 #include "slist.h"
 #include "stringx.h"
+#include "suffix.h"
 #include "yesno.h"
 
 #define CURINCLUDE		"./"
@@ -119,38 +121,26 @@ addincdir(void)
 	initsysinclude();
 
 	/* C CFLAGS macro */
-	if ((htb = htlookup(MCFLAGS, MDEFTABLE)) != NULL)
-		getI(htb->h_key, htb->h_def, C_INCDIR);
-	if (slappend(SYSINCLUDE, C_INCDIR) == NULL)
-		cleanup(0);
+	if ((htb = htlookup(MCFLAGS, MDEFTABLE)) != NULL) getI(htb->h_key, htb->h_def, C_INCDIR);
+	if (slappend(SYSINCLUDE, C_INCDIR) == NULL) cleanup(0);
 	
 	/* C++ CXXFLAGS macro */
-	if ((htb = htlookup(MCXXFLAGS, MDEFTABLE)) != NULL)
-		getI(htb->h_key, htb->h_def, CXX_INCDIR);
+	if ((htb = htlookup(MCXXFLAGS, MDEFTABLE)) != NULL) getI(htb->h_key, htb->h_def, CXX_INCDIR);
 
 	/* C++ C++FLAGS macro */
-	if ((htb = htlookup(MCPXFLAGS, MDEFTABLE)) != NULL)
-		getI(htb->h_key, htb->h_def, CXX_INCDIR);
+	if ((htb = htlookup(MCPXFLAGS, MDEFTABLE)) != NULL) getI(htb->h_key, htb->h_def, CXX_INCDIR);
 
 	/* C++ CCFLAGS macro */
-	if ((htb = htlookup(MCCFLAGS, MDEFTABLE)) != NULL)
-		getI(htb->h_key, htb->h_def, CXX_INCDIR);
-
-	if (slappend(SYSINCLUDECC, CXX_INCDIR) == NULL ||
-	    slappend(SYSINCLUDE,   CXX_INCDIR) == NULL)
-		cleanup(0);
+	if ((htb = htlookup(MCCFLAGS, MDEFTABLE)) != NULL) getI(htb->h_key, htb->h_def, CXX_INCDIR);
+	if (slappend(SYSINCLUDECC, CXX_INCDIR) == NULL || slappend(SYSINCLUDE, CXX_INCDIR) == NULL) cleanup(0);
 
 	/* Fortran FFLAGS macro */
-	if ((htb = htlookup(MFFLAGS, MDEFTABLE)) != NULL)
-		getI(htb->h_key, htb->h_def, F_INCDIR);
-	if (slappend(SYSINCLUDE, F_INCDIR) == NULL)
-		cleanup(0);
+	if ((htb = htlookup(MFFLAGS, MDEFTABLE)) != NULL) getI(htb->h_key, htb->h_def, F_INCDIR);
+	if (slappend(SYSINCLUDE, F_INCDIR) == NULL) cleanup(0);
 
 	/* Pascal PFLAGS macro */
-	if ((htb = htlookup(MPFLAGS, MDEFTABLE)) != NULL)
-		getI(htb->h_key, htb->h_def, P_INCDIR);
-	if (slappend(SYSINCLUDE, P_INCDIR) == NULL)
-		cleanup(0);
+	if ((htb = htlookup(MPFLAGS, MDEFTABLE)) != NULL) getI(htb->h_key, htb->h_def, P_INCDIR);
+	if (slappend(SYSINCLUDE, P_INCDIR) == NULL) cleanup(0);
 }
 
 
@@ -179,74 +169,61 @@ int findinclude(char *incpath, char *incname, char *lastname, int type)
 	/*
 	 * look for an absolute include file name
 	 */
-	if (*incname == '/')
-		{
+	if (*incname == '/') {
 		strcpy(incpath, incname);
-		return(FILEXIST(incpath) ? INCLUDETYPE(incpath) : NOTFOUND);
-		}
+		return (FILEXIST(incpath) ? INCLUDETYPE(incpath) : NOTFOUND);
+	}
 
 	/*
 	 * search the current include directory for an #include file
 	 * whose name is enclosed in " ", or see if it can be generated
 	 * by a transformation rule in the current working directory.
 	 */
-	if (*incname != '<')
-		{
-		if (LOCALDIR(lastname))
-			{
-			if (LOCALDIR(incname))
-				{
-				if (applyrule(incname, incpath) == YES)
-					return(FROMRULE);
-				}
-			strcpy(incpath, incname);
-			if (FILEXIST(incpath))
-				return(INCLUDETYPE(incpath));
+	if (*incname != '<') {
+		if (LOCALDIR(lastname)) {
+			if (LOCALDIR(incname)) {
+				if (applyrule(incname, incpath) == YES) return FROMRULE;
 			}
-		else	{
+			strcpy(incpath, incname);
+			if (FILEXIST(incpath)) return INCLUDETYPE(incpath);
+		} else {
 			strcpy(incpath, lastname);
 			pathcat(incpath, pathhead(incpath), incname);
 			optpath(incpath);
-			if (FILEXIST(incpath))
-				return(INCLUDETYPE(incpath));
-			}
+			if (FILEXIST(incpath)) return INCLUDETYPE(incpath);
 		}
+	}
 
 	/*
 	 * search directory list
 	 */
-	switch (type)
-		{
-		case INCLUDE_C:
-			slist = C_INCDIR;
-			break;
-		case INCLUDE_CXX:
-			slist = CXX_INCDIR;
-			break;
-		case INCLUDE_FORTRAN:
-			slist = F_INCDIR;
-			break;
-		case INCLUDE_PASCAL:
-			slist = P_INCDIR;
-			break;
-		}
-	for (slb = slist->head; slb != NULL; slb = slb->next)
-		{
+	switch (type) {
+	case INCLUDE_C:
+		slist = C_INCDIR;
+		break;
+	case INCLUDE_CXX:
+		slist = CXX_INCDIR;
+		break;
+	case INCLUDE_FORTRAN:
+		slist = F_INCDIR;
+		break;
+	case INCLUDE_PASCAL:
+		slist = P_INCDIR;
+		break;
+	}
+	for (slb = slist->head; slb != NULL; slb = slb->next) {
 		pp = strpcpy(incpath, slb->key);
-		if (*incname == '<')
-			{
+		if (*incname == '<') {
 			pp = strpcpy(pp, incname+1);
 			pp[-1] = '\0';
-			}
-		else	{
+		} else {
 			strcpy(pp, incname);
-			}
-		optpath(incpath);
-		if (FILEXIST(incpath))
-			return(INCLUDETYPE(incpath));
 		}
+		optpath(incpath);
+		if (FILEXIST(incpath)) return INCLUDETYPE(incpath);
+	}
 
-	return(NOTFOUND);
+	return NOTFOUND;
 }
 
 
@@ -263,19 +240,15 @@ getI(char *mnam, char *mdef, SLIST *slist)
 {
 	char incpath[PATHSIZE];		/* include directory pathname buffer */
 
-	while ((mdef = getoption(incpath, mdef, "-I")) != NULL)
-		{
-		if (*incpath == '\0')
-			{
+	while ((mdef = getoption(incpath, mdef, "-I")) != NULL) {
+		if (*incpath == '\0') {
 			warns("missing include directory in %s macro definition", mnam);
 			break;
-			}
-		else	{
+		} else {
 			strcat(incpath, PATHSEP);
-			if (slappend(incpath, slist) == NULL)
-				cleanup(0);
-			}
+			if (slappend(incpath, slist) == NULL) cleanup(0);
 		}
+	}
 }
 
 
@@ -296,35 +269,30 @@ int getinclude(char *incname, char *curname, int lineno, FILE *ifp)
 	int c;			/* current character */
 
 	SKIPWHITESPACE(c, ifp);
-	for (ip = incname; (c = getc(ifp)) != EOF; ip++)
-		{
+	for (ip = incname; (c = getc(ifp)) != EOF; ip++) {
 		*ip = c;
 		if (c == '\n' || c == '\t' || c == ' ' ||
-		    c == ';'  || c == ','  || c == '$' )
-			{
+		    c == ';'  || c == ','  || c == '$' ) {
 			ungetc(c, ifp);
 			break;
-			}
 		}
+	}
 	*ip = '\0';
 	if ((*incname == '<'  && ip[-1] != '>')  ||
 	    (*incname == '\"' && ip[-1] != '\"') ||
 	    (*incname == '\'' && ip[-1] != '\'') ||
-	    (*incname == '('  && ip[-1] != ')'))
-		{
+	    (*incname == '('  && ip[-1] != ')')) {
 		fprintf(stderr,
 			"%s: \"%s\", line %d: bad include syntax for %s\n",
 			PGN, curname, lineno, incname);
-		return(NO);
-		}
-	if (*incname == '\"' || *incname == '\'' || *incname == '(')
-		{
+		return NO;
+	}
+	if (*incname == '\"' || *incname == '\'' || *incname == '(') {
 		ip[-1] = '\0';
 		ip = incname + 1;
-		while (*incname++ = *ip++)
-			continue;
-		}
-	return(YES);
+		while (*incname++ = *ip++) continue;
+	}
+	return YES;
 }
 
 
@@ -340,15 +308,14 @@ inclink(HASHBLK *htb)
 {
 	INCBLK *iblk;			/* pointer to new include chain block */
 
-	if ((iblk = (INCBLK *) malloc(sizeof(INCBLK))) == NULL)
-		{
+	if ((iblk = (INCBLK *) malloc(sizeof(INCBLK))) == NULL) {
 		nocore();
 		cleanup(0);
-		}
+	}
 	iblk->i_loop = NO;
 	iblk->i_hblk = htb;
 	iblk->i_next = NULL;
-	return(iblk);
+	return iblk;
 }
 
 
@@ -368,43 +335,37 @@ instalinclude(char *incname, char *incpath, int type)
 	int ilen;			/* include path length */
 
 	ilen = strlen(incpath);
-	switch (type)
-		{
-		case INCLUDE_C:
-			if (C_INCLUDETABLE == NULL)
-				{
-				C_INCLUDETABLE = htinit(INCLUDETABLESIZE);
-				}
-			htb = htinstall(incname, incpath, ilen, C_INCLUDETABLE);
-			break;
-		case INCLUDE_CXX:
-			if (CXX_INCLUDETABLE == NULL)
-				{
-				CXX_INCLUDETABLE = htinit(INCLUDETABLESIZE);
-				}
-			htb = htinstall(incname, incpath, ilen, CXX_INCLUDETABLE);
-			break;
-		case INCLUDE_FORTRAN:
-			if (F_INCLUDETABLE == NULL)
-				{
-				F_INCLUDETABLE = htinit(INCLUDETABLESIZE);
-				}
-			htb = htinstall(incname, incpath, ilen, F_INCLUDETABLE);
-			break;
-		case INCLUDE_PASCAL:
-			if (P_INCLUDETABLE == NULL)
-				{
-				P_INCLUDETABLE = htinit(INCLUDETABLESIZE);
-				}
-			htb = htinstall(incname, incpath, ilen, P_INCLUDETABLE);
-			break;
-		default:
-			htb = NULL;
-			break;
+	switch (type) {
+	case INCLUDE_C:
+		if (C_INCLUDETABLE == NULL) {
+			C_INCLUDETABLE = htinit(INCLUDETABLESIZE);
 		}
-	if (htb == NULL)
-		cleanup(0);
-	return(htb);
+		htb = htinstall(incname, incpath, ilen, C_INCLUDETABLE);
+		break;
+	case INCLUDE_CXX:
+		if (CXX_INCLUDETABLE == NULL) {
+			CXX_INCLUDETABLE = htinit(INCLUDETABLESIZE);
+		}
+		htb = htinstall(incname, incpath, ilen, CXX_INCLUDETABLE);
+		break;
+	case INCLUDE_FORTRAN:
+		if (F_INCLUDETABLE == NULL) {
+			F_INCLUDETABLE = htinit(INCLUDETABLESIZE);
+		}
+		htb = htinstall(incname, incpath, ilen, F_INCLUDETABLE);
+		break;
+	case INCLUDE_PASCAL:
+		if (P_INCLUDETABLE == NULL) {
+			P_INCLUDETABLE = htinit(INCLUDETABLESIZE);
+		}
+		htb = htinstall(incname, incpath, ilen, P_INCLUDETABLE);
+		break;
+	default:
+		htb = NULL;
+		break;
+	}
+	if (htb == NULL) cleanup(0);
+	return htb;
 }
 
 
@@ -420,25 +381,24 @@ lookupinclude(char *incname, int type)
 {
 	HASH *includetable;		/* include file hash table */
 
-	switch (type)
-		{
-		case INCLUDE_C:
-			includetable = C_INCLUDETABLE;
-			break;
-		case INCLUDE_CXX:
-			includetable = CXX_INCLUDETABLE;
-			break;
-		case INCLUDE_FORTRAN:
-			includetable = F_INCLUDETABLE;
-			break;
-		case INCLUDE_PASCAL:
-			includetable = P_INCLUDETABLE;
-			break;
-		default:
-			includetable = NULL;
-			break;
-		}
-	return((includetable == NULL) ? NULL : htlookup(incname, includetable));
+	switch (type) {
+	case INCLUDE_C:
+		includetable = C_INCLUDETABLE;
+		break;
+	case INCLUDE_CXX:
+		includetable = CXX_INCLUDETABLE;
+		break;
+	case INCLUDE_FORTRAN:
+		includetable = F_INCLUDETABLE;
+		break;
+	case INCLUDE_PASCAL:
+		includetable = P_INCLUDETABLE;
+		break;
+	default:
+		includetable = NULL;
+		break;
+	}
+	return (includetable == NULL) ? NULL : htlookup(incname, includetable);
 }
 
 
@@ -472,35 +432,30 @@ mkdepend(void)
 	/* initialize dependency list */
 	dlist = dlinit();
 
-	for (lbp = SRCLIST->head; lbp != NULL; lbp = lbp->next)
-		{
+	for (lbp = SRCLIST->head; lbp != NULL; lbp = lbp->next) {
 		suffix = strrchr(lbp->key, '.');
 		type = lookuptypeofinclude(++suffix);
-		switch (type)
-			{
-			case INCLUDE_C:
-			case INCLUDE_CXX:
-				ibp = readC(lbp->key, 0, lbp->key, type);
-				break;
-			case INCLUDE_FORTRAN:
-				ibp = readF(lbp->key, 0, lbp->key, type);
-				break;
-			case INCLUDE_PASCAL:
-				ibp = readP(lbp->key, 0, lbp->key, type);
-				break;
-			case INCLUDE_NONE:
-				ibp = NULL;
-				break;
-			}
-		if (ibp != NULL)
-			{
-			if (dlappend(type, lbp, ibp, dlist) == NULL)
-				cleanup(0);
-			}
+		switch (type) {
+		case INCLUDE_C:
+		case INCLUDE_CXX:
+			ibp = readC(lbp->key, 0, lbp->key, type);
+			break;
+		case INCLUDE_FORTRAN:
+			ibp = readF(lbp->key, 0, lbp->key, type);
+			break;
+		case INCLUDE_PASCAL:
+			ibp = readP(lbp->key, 0, lbp->key, type);
+			break;
+		case INCLUDE_NONE:
+			ibp = NULL;
+			break;
 		}
-	if (slsort(strcmp, EXTLIST) == NO || slsort(strcmp, SYSLIST) == NO)
-		cleanup(0);
-	return(dlist);
+		if (ibp != NULL) {
+			if (dlappend(type, lbp, ibp, dlist) == NULL) cleanup(0);
+		}
+	}
+	if (slsort(strcmp, EXTLIST) == NO || slsort(strcmp, SYSLIST) == NO) cleanup(0);
+	return dlist;
 }
 
 
@@ -514,19 +469,16 @@ notfound(char *curname, int lineno, char *incname)
 // char *incname;		/* name of include file */
 // int lineno;			/* current line number */
 {
-	if (PGN != NULL && *PGN != '\0')
-		{
+	if (PGN != NULL && *PGN != '\0') {
 		fprintf(stderr, "%s: ", PGN);
-		}
-	if (*incname == '<')
-		{
+	}
+	if (*incname == '<') {
 		fprintf(stderr, "\"%s\", line %d: can't find %s\n",
 			curname, lineno, incname);
-		}
-	else	{
+	} else {
 		fprintf(stderr, "\"%s\", line %d: can't find \"%s\"\n",
 			curname, lineno, incname);
-		}
+	}
 }
 
 
@@ -555,82 +507,59 @@ readC(char *lastfile, int lastline, char *curname, int type)
 	int inctype;			/* origin of include file */
 	int lineno = 1;			/* current line number */
 
-	if ((ifp = fopen(curname, "r")) == NULL)
-		{
-		if (lastline > 0)
-			fprintf(stderr, "%s: \"%s\", line %d: ", PGN,
-				lastfile, lastline);
-		else
+	if ((ifp = fopen(curname, "r")) == NULL) {
+		if (lastline > 0) {
+			fprintf(stderr, "%s: \"%s\", line %d: ", PGN, lastfile, lastline);
+		} else {
 			fprintf(stderr, "%s: ", PGN);
-		perror(curname);
-		return(NULL);
 		}
-	while ((c = getc(ifp)) != EOF)
-		{
-		if (ISWHITESPACE(c))
-			continue;
-		if (c != '#')
-			goto nextline;
+		perror(curname);
+		return NULL;
+	}
+	while ((c = getc(ifp)) != EOF) {
+		if (ISWHITESPACE(c)) continue;
+		if (c != '#') goto nextline;
 		SKIPWHITESPACE(c, ifp);
-		for (p = "include"; (c = getc(ifp)) == *p && *p != '\0' ; p++)
-			continue;
-		if (*p != '\0')
-			goto nextline;
+		for (p = "include"; (c = getc(ifp)) == *p && *p != '\0' ; p++) continue;
+		if (*p != '\0') goto nextline;
 		ungetc(c, ifp);
-		if (getinclude(incname, curname, lineno, ifp) == NO)
-			goto nextline;
-		if ((htb = lookupinclude(incname, type)) == NULL)
-			{
+		if (getinclude(incname, curname, lineno, ifp) == NO) goto nextline;
+		if ((htb = lookupinclude(incname, type)) == NULL) {
 			inctype = findinclude(incpath, incname, curname, type);
-			if (inctype == INTERNAL)
-				{
+			if (inctype == INTERNAL) {
 				htb = instalinclude(incname, incpath, type);
-				}
-			else if (inctype == SYSTEM && SYSHDRS == YES)
-				{
+			} else if (inctype == SYSTEM && SYSHDRS == YES) {
 				htb = instalinclude(incname, incpath, type);
-				if (slappend(incpath, SYSLIST) == NULL)
-					cleanup(0);
-				}
-			else if (inctype == SYSTEM && SYSHDRS == NO)
-				{
+				if (slappend(incpath, SYSLIST) == NULL) cleanup(0);
+			} else if (inctype == SYSTEM && SYSHDRS == NO) {
 				goto nextline;
-				}
-			else if (inctype == EXTERNAL)
-				{
+			} else if (inctype == EXTERNAL) {
 				htb = instalinclude(incname, incpath, type);
-				if (slappend(incpath, EXTLIST) == NULL)
-					cleanup(0);
-				}
-			else if (inctype == FROMRULE)
-				{
+				if (slappend(incpath, EXTLIST) == NULL) cleanup(0);
+			} else if (inctype == FROMRULE) {
 				htb = instalinclude(incname, incname, type);
 				ftb = instalinclude(incpath, incpath, type);
-				}
-			else	{
+			} else {
 				notfound(curname, lineno, incname);
 				goto nextline;
-				}
+			}
 
 			/* look for nested include files */
 			htb->h_sub = readC(curname, lineno, incpath, type);
 
-			if (inctype == FROMRULE)
-				ftb->h_sub = htb->h_sub;
-			}
-		if (i_tail == NULL)
-			{
-			i_head = i_tail = inclink(htb);
-			}
-		else	{
-			i_tail = i_tail->i_next = inclink(htb);
-			}
-nextline:	while (c != '\n' && c != EOF)
-			c = getc(ifp);
-		lineno++;
+			if (inctype == FROMRULE) ftb->h_sub = htb->h_sub;
 		}
+		if (i_tail == NULL) {
+			i_head = i_tail = inclink(htb);
+		} else {
+			i_tail = i_tail->i_next = inclink(htb);
+		}
+nextline:
+		while (c != '\n' && c != EOF) c = getc(ifp);
+		lineno++;
+	}
 	fclose(ifp);
-	return(i_head);
+	return i_head;
 }
 
 
@@ -659,81 +588,61 @@ readF(char *lastfile, int lastline, char *curname, int type)
 	int inctype;			/* origin of include file */
 	int lineno = 1;			/* current line number */
 
-	if ((ifp = fopen(curname, "r")) == NULL)
-		{
-		if (lastline > 0)
+	if ((ifp = fopen(curname, "r")) == NULL) {
+		if (lastline > 0) {
 			fprintf(stderr, "%s: \"%s\", line %d: ", PGN,
 				lastfile, lastline);
-		else
+		} else {
 			fprintf(stderr, "%s: ", PGN);
-		perror(curname);
-		return(NULL);
 		}
-	while ((c = getc(ifp)) != EOF)
-		{
-		if (c == 'c' || c == 'C' || c == '*' || c == '\n')
-			goto nextline;
+		perror(curname);
+		return NULL;
+	}
+	while ((c = getc(ifp)) != EOF) {
+		if (c == 'c' || c == 'C' || c == '*' || c == '\n') goto nextline;
 		while ((c = getc(ifp)) == ' ' || c == '\t' || c == '#' || c == '$')
 			continue;
 		for (p = "include"; *p == TOLOWER(c) && *p != '\0'; p++)
 			c = getc(ifp);
-		if (*p != '\0')
-			goto nextline;
+		if (*p != '\0') goto nextline;
 		ungetc(c, ifp);
-		if (getinclude(incname, curname, lineno, ifp) == NO)
-			goto nextline;
-		if ((htb = lookupinclude(incname, type)) == NULL)
-			{
+		if (getinclude(incname, curname, lineno, ifp) == NO) goto nextline;
+		if ((htb = lookupinclude(incname, type)) == NULL) {
 			inctype = findinclude(incpath, incname, curname, type);
-			if (inctype == INTERNAL)
-				{
+			if (inctype == INTERNAL) {
 				htb = instalinclude(incname, incpath, type);
-				}
-			else if (inctype == SYSTEM && SYSHDRS == YES)
-				{
+			} else if (inctype == SYSTEM && SYSHDRS == YES) {
 				htb = instalinclude(incname, incpath, type);
-				if (slappend(incpath, SYSLIST) == NULL)
-					cleanup(0);
-				}
-			else if (inctype == SYSTEM && SYSHDRS == NO)
-				{
+				if (slappend(incpath, SYSLIST) == NULL) cleanup(0);
+			} else if (inctype == SYSTEM && SYSHDRS == NO) {
 				goto nextline;
-				}
-			else if (inctype == EXTERNAL)
-				{
+			} else if (inctype == EXTERNAL) {
 				htb = instalinclude(incname, incpath, type);
-				if (slappend(incpath, EXTLIST) == NULL)
-					cleanup(0);
-				}
-			else if (inctype == FROMRULE)
-				{
+				if (slappend(incpath, EXTLIST) == NULL) cleanup(0);
+			} else if (inctype == FROMRULE) {
 				htb = instalinclude(incname, incname, type);
 				ftb = instalinclude(incpath, incpath, type);
-				}
-			else	{
+			} else {
 				notfound(curname, lineno, incname);
 				goto nextline;
-				}
+			}
 
 			/* look for nested include files */
 			htb->h_sub = readF(curname, lineno, incpath, type);
 
-			if (inctype == FROMRULE)
-				ftb->h_sub = htb->h_sub;
-			}
-		if (i_tail == NULL)
-			{
-			i_head = i_tail = inclink(htb);
-			}
-		else	{
-			i_tail = i_tail->i_next = inclink(htb);
-			}
-nextline:	while (c != '\n' && c != EOF)
-			c = getc(ifp);
-		lineno++;
+			if (inctype == FROMRULE) ftb->h_sub = htb->h_sub;
 		}
+		if (i_tail == NULL) {
+			i_head = i_tail = inclink(htb);
+		} else {
+			i_tail = i_tail->i_next = inclink(htb);
+		}
+nextline:	
+		while (c != '\n' && c != EOF) c = getc(ifp);
+		lineno++;
+	}
 	fclose(ifp);
-	return(i_head);
+	return i_head;
 }
 
 
@@ -762,83 +671,62 @@ readP(char *lastfile, int lastline, char *curname, int type)
 	int inctype;			/* origin of include file */
 	int lineno = 1;			/* current line number */
 
-	if ((ifp = fopen(curname, "r")) == NULL)
-		{
-		if (lastline > 0)
+	if ((ifp = fopen(curname, "r")) == NULL) {
+		if (lastline > 0) {
 			fprintf(stderr, "%s: \"%s\", line %d: ", PGN,
 				lastfile, lastline);
-		else
+		} else {
 			fprintf(stderr, "%s: ", PGN);
-		perror(curname);
-		return(NULL);
 		}
-	while ((c = getc(ifp)) != EOF)
-		{
-		if (ISWHITESPACE(c))
-			continue;
-		if (c != '#' && c != '$')
-			goto nextline;
-		while ((c = getc(ifp)) == ' ' || c == '\t')
-			continue;
-		for (p = "include"; *p == TOLOWER(c) && *p != '\0'; p++)
+		perror(curname);
+		return NULL;
+	}
+	while ((c = getc(ifp)) != EOF) {
+		if (ISWHITESPACE(c)) continue;
+		if (c != '#' && c != '$') goto nextline;
+		while ((c = getc(ifp)) == ' ' || c == '\t') continue;
+		for (p = "include"; *p == TOLOWER(c) && *p != '\0'; p++) {
 			c = getc(ifp);
-		if (*p != '\0')
-			goto nextline;
+		}
+		if (*p != '\0') goto nextline;
 		ungetc(c, ifp);
-		if (getinclude(incname, curname, lineno, ifp) == NO)
-			goto nextline;
-		if ((htb = lookupinclude(incname, type)) == NULL)
-			{
+		if (getinclude(incname, curname, lineno, ifp) == NO) goto nextline;
+		if ((htb = lookupinclude(incname, type)) == NULL) {
 			inctype = findinclude(incpath, incname, curname, type);
-			if (inctype == INTERNAL)
-				{
+			if (inctype == INTERNAL) {
 				htb = instalinclude(incname, incpath, type);
-				}
-			else if (inctype == SYSTEM && SYSHDRS == YES)
-				{
+			} else if (inctype == SYSTEM && SYSHDRS == YES) {
 				htb = instalinclude(incname, incpath, type);
-				if (slappend(incpath, SYSLIST) == NULL)
-					cleanup(0);
-				}
-			else if (inctype == SYSTEM && SYSHDRS == NO)
-				{
+				if (slappend(incpath, SYSLIST) == NULL) cleanup(0);
+			} else if (inctype == SYSTEM && SYSHDRS == NO) {
 				goto nextline;
-				}
-			else if (inctype == EXTERNAL)
-				{
+			} else if (inctype == EXTERNAL) {
 				htb = instalinclude(incname, incpath, type);
-				if (slappend(incpath, EXTLIST) == NULL)
-					cleanup(0);
-				}
-			else if (inctype == FROMRULE)
-				{
+				if (slappend(incpath, EXTLIST) == NULL) cleanup(0);
+			} else if (inctype == FROMRULE) {
 				htb = instalinclude(incname, incname, type);
 				ftb = instalinclude(incpath, incpath, type);
-				}
-			else	{
+			} else {
 				notfound(curname, lineno, incname);
 				goto nextline;
-				}
+			}
 
 			/* look for nested include files */
 			htb->h_sub = readP(curname, lineno, incpath, type);
 
-			if (inctype == FROMRULE)
-				ftb->h_sub = htb->h_sub;
-			}
-		if (i_tail == NULL)
-			{
-			i_head = i_tail = inclink(htb);
-			}
-		else	{
-			i_tail = i_tail->i_next = inclink(htb);
-			}
-nextline:	while (c != '\n' && c != EOF)
-			c = getc(ifp);
-		lineno++;
+			if (inctype == FROMRULE) ftb->h_sub = htb->h_sub;
 		}
+		if (i_tail == NULL) {
+			i_head = i_tail = inclink(htb);
+		} else {
+			i_tail = i_tail->i_next = inclink(htb);
+		}
+nextline:
+		while (c != '\n' && c != EOF) c = getc(ifp);
+		lineno++;
+	}
 	fclose(ifp);
-	return(i_head);
+	return i_head;
 }
 
 int initsysinclude(void)
@@ -846,11 +734,10 @@ int initsysinclude(void)
 	HASHBLK *htb;			/* hash table entry block */
 
 #ifdef _HasCompileSysType
-	if ((htb = htlookup(MCOMPILESYSTYPE, MDEFTABLE)) != NULL)
-		{
+	if ((htb = htlookup(MCOMPILESYSTYPE, MDEFTABLE)) != NULL) {
 	        sprintf(SYSINCLUDE, "/%s", htb->h_def);
 	        sprintf(SYSINCLUDECC, "/%s", htb->h_def);
-		}
+	}
 #endif
 
         strcat(SYSINCLUDE, USRINCLUDE);

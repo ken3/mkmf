@@ -1,5 +1,6 @@
 #ifndef _MACRO_H_INCLUDED
 #define _MACRO_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -77,5 +78,5 @@
 #define WHITESPACE(c) \
 	(c == ' ' || c == '\t')		/* unseen space in a file */
 
-#endif // _MACRO_H_INCLUDED
+#endif /* _MACRO_H_INCLUDED */
 

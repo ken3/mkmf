@@ -52,8 +52,9 @@ void badopt(char sign, char c)
 // char c;				/* offending option */
 // char sign;			/* '+' or '-' sign preceding option */
 {
-	if (PGN != NULL && *PGN != '\0')
+	if (PGN != NULL && *PGN != '\0') {
 		fprintf(stderr, "%s: ", PGN);
+	}
 	fprintf(stderr, "bad option %c%c\n", sign, c);
 	return;
 }

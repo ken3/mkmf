@@ -48,34 +48,35 @@
  * Singly-linked list macros
  */
 #define SLNUM(slist)	(slist)->nk
+
 /*
  * Singly-linked list block
  */
-typedef struct slblk
-	{
+typedef struct slblk {
 	char *key;			/* points to a key */
 	struct slblk *next;		/* ptr to next list block */
-	} SLBLK;
+} SLBLK;
+
 /*
  * Singly-linked list head block
  */
-typedef struct slisthb
-	{
+typedef struct slisthb {
 	int nk;				/* number of keys in list */
 	int maxkey;			/* length of longest key */
 	SLBLK *head;			/* pointer to first list block */
 	SLBLK *curblk;			/* pointer to current block */
 	SLBLK *tail;			/* pointer to last list block */
-	} SLIST;
+} SLIST;
+
 /*
  * Functions defined for singly-linked list operations
  */
-extern char *slappend(char *key, SLIST *slist);           /* append key */
-extern SLIST *slinit(void);                               /* initialize list */
-extern void slrm(SLIST *slist);                           /* remove list item */
-extern int slsort(int (*compar)(const char*, const char*), SLIST *slist);         /* sort list */
-extern SLBLK **slvect(SLIST *slist);                      /* make linked list vector */
-extern void slvtol(SLIST *slist, SLBLK **slv);            /* convert vector to linked list */
+char*   slappend(char*, SLIST*);                           /* append key */
+SLIST*  slinit(void);                                      /* initialize list */
+void    slrm(SLIST *);                                     /* remove list item */
+int     slsort(int (*)(const char*, const char*), SLIST*); /* sort list */
+SLBLK** slvect(SLIST*);                                    /* make linked list vector */
+void    slvtol(SLIST*, SLBLK**);                           /* convert vector to linked list */
 
 #endif /* _SLIST_H_INCLUDED */
 

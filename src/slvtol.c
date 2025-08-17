@@ -47,33 +47,30 @@
 
 void
 slvtol(SLIST *slist, SLBLK **slv)
-// SLIST *slist;			/* pointer to list head block */
+// SLIST *slist;		/* pointer to list head block */
 // SLBLK **slv;			/* ptr to singly-linked list vector */
 {
-	SLBLK *cblk;			/* current list block */
+	SLBLK *cblk;		/* current list block */
 
-	int cbi;			/* current block index */
-	int nk = 0;			/* number of items in new list */
+	int cbi;		/* current block index */
+	int nk = 0;		/* number of items in new list */
 	SLBLK *cbp;		/* current block pointer */
 	
 	slist->head = slist->tail = NULL;
 
-	for (cbi=0; cbi < SLNUM(slist); cbi++)
-		{
+	for (cbi=0; cbi < SLNUM(slist); cbi++) {
 		cbp = slv[cbi];
-		if (cbp != NULL)
-			{
+		if (cbp != NULL) {
 			cbp->next = NULL;
-			if (slist->tail == NULL)
-				{
+			if (slist->tail == NULL) {
 				slist->head = slist->tail = cbp;
-				}
-			else	{
+			} else {
 				slist->tail = slist->tail->next = cbp;
-				}
-			nk++;
 			}
+			nk++;
 		}
+	}
 	slist->nk = nk;
 	free((char *) slv);
+	return;
 }

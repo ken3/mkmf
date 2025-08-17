@@ -51,12 +51,12 @@ slrm(SLIST *slist)
 // SLIST *slist;			/* pointer to list head block */
 {
 	SLBLK *nxtblk;			/* next list block */
-	while (slist->head != NULL)
-		{
+	while (slist->head != NULL) {
 		nxtblk = slist->head->next;
 		free(slist->head->key);
 		free((char *) slist->head);
 		slist->head = nxtblk;
-		}
+	}
 	free((char *) slist);
+	return;
 }

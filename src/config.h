@@ -1,3 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 /*
  * Copyright (c) 1991, 1993 Peter J. Nicklin.
  * Copyright (c) 1991, 1993 Version Technology.
@@ -58,8 +61,6 @@
  * _HasCompileSysType		COMPILESYSTYPE environment var (Domain/OS only)
  * _HasEnxioReadlinkReturn	Readlink returns ENXIO (Domain/OS 10.2 bug only)
  */
-#ifndef CONFIG_H
-#define CONFIG_H
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -220,3 +221,4 @@
 #define FILEWRITE(file)		((access(file,6) == 0) ? 1 : 0)
 
 #endif /* CONFIG_H */
+

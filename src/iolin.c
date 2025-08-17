@@ -57,20 +57,16 @@ getlin(FILE *stream)
 	char *iop;		/* IOBUF pointer */
 
 	iop = IOBUF;
-	while ((c = getc(stream)) != '\n' && c != EOF)
-		*iop++ = c;
-	if (c == EOF && iop == IOBUF)
-		return(NULL);
-	if (iop != IOBUF && iop[-1] == '\\')
-		{
+	while ((c = getc(stream)) != '\n' && c != EOF) *iop++ = c;
+	if (c == EOF && iop == IOBUF) return NULL;
+	if (iop != IOBUF && iop[-1] == '\\') {
 		iop[-1] = '\0';
 		CONTINUE = YES;
-		}
-	else	{
+	} else {
 		iop[0] = '\0';
 		CONTINUE = NO;
-		}
-	return(IOBUF);
+	}
+	return IOBUF;
 }
 
 
@@ -85,17 +81,16 @@ purgcontinue(FILE *stream)
 	int c;			/* current character */
 	int lastc;		/* previous character */
 
-	if (CONTINUE == YES)
-		{
-		for (;;)
-			{
-			while ((c = getc(stream)) != '\n' && c != EOF)
+	if (CONTINUE == YES) {
+		for (;;) {
+			while ((c = getc(stream)) != '\n' && c != EOF) {
 				lastc = c;
-			if (c == EOF || (c == '\n' && lastc != '\\'))
-				break;
 			}
-		CONTINUE = NO;
+			if (c == EOF || (c == '\n' && lastc != '\\')) break;
 		}
+		CONTINUE = NO;
+	}
+	return;
 }
 
 
@@ -112,9 +107,10 @@ putlin(FILE *stream)
 	char *iop;		/* IOBUF pointer */
 
 	iop = IOBUF;
-	while (c = *iop++)
+	while (c = *iop++) {
 		putc(c, stream);
-	if (CONTINUE == YES)
-		putc('\\', stream);
+	}
+	if (CONTINUE == YES) putc('\\', stream);
 	putc('\n', stream);
+	return;
 }

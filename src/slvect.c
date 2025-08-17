@@ -53,16 +53,14 @@ slvect(SLIST *slist)
 	SLBLK **svp;			/* ptr to start of block ptr array */
 	SLBLK *cblk;			/* current list block */
 
-	if (SLNUM(slist) <= 0)
-		return(NULL);
-	else if ((svp = (SLBLK **) malloc((unsigned)SLNUM(slist)*sizeof(SLBLK *))) == NULL)
-		{
+	if (SLNUM(slist) <= 0) {
+		return NULL;
+	} else if ((svp = (SLBLK **) malloc((unsigned)SLNUM(slist)*sizeof(SLBLK *))) == NULL) {
 		nocore();
-		return(NULL);
-		}
-	for (vp=svp, cblk=slist->head; cblk != NULL; vp++, cblk=cblk->next)
-		{
+		return NULL;
+	}
+	for (vp=svp, cblk=slist->head; cblk != NULL; vp++, cblk=cblk->next) {
 		*vp = cblk;
-		}
-	return(svp);
+	}
+	return svp;
 }

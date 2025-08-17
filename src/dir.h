@@ -1,3 +1,6 @@
+#ifndef _DIR_H_INCLUDED
+#define _DIR_H_INCLUDED
+
 /*
  * Copyright (c) 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -40,8 +43,6 @@
  *
  * Author: Peter J. Nicklin
  */
-#ifndef DIR_H
-#define DIR_H
 
 #include "config.h"
 
@@ -66,4 +67,5 @@
 #  define MAXNAMLEN 14
 #endif
 
-#endif /* DIR_H */
+#endif /* _DIR_H_INCLUDED */
+

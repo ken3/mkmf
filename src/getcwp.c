@@ -52,7 +52,6 @@ extern char *_PROJECT;			/* project root directory pathname */
 char *
 getcwp(void)
 {
-	if (_PROJECT == NULL)
-		getproject();
-	return(_PROJECT);
+	if (_PROJECT == NULL) getproject();
+	return _PROJECT;
 }

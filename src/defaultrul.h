@@ -1,5 +1,6 @@
 #ifndef _DEFAULTRUL_H_INCLUDED
 #define _DEFAULTRUL_H_INCLUDED
+
 /*
  * Copyright (c) 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -45,5 +46,5 @@
 ".y.c", 	/* Yacc */
 ".l.c", 	/* Lex */
 
-#endif // _DEFAULTRUL_H_INCLUDED
+#endif /* _DEFAULTRUL_H_INCLUDED */
 

@@ -50,12 +50,11 @@ extern char *PGN;			/* program name */
 void pperror(char *message)
 // char *message;			/* error message */
 {
-	if (message == NULL || *message == '\0')
-		{
+	if (message == NULL || *message == '\0') {
 		perror(PGN);
-		}
-	else	{
+	} else {
 		fprintf(stderr, "%s: ", PGN);
 		perror(message);
-		}
+	}
+	return;
 }

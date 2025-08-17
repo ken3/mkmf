@@ -46,8 +46,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hash.h"
-#include "slist.h"
 #include "dlist.h"
 #include "target.h"
 
@@ -63,6 +61,7 @@
 #define RULETABSIZE	    	  256	/* rule table size */
 #define SFXTABSIZE		  256	/* suffix table size */
 #define SUFFIXSIZE		   16	/* suffix size */
+
 /*
  * Predefined macro names
  */
@@ -87,6 +86,7 @@
 #define MSUFFIX		"SUFFIX"
 #define MSYSHDRS	"SYSHDRS"
 #define MVPATH		"VPATH"
+
 /*
  * Predefined $(macro) instances
  */
@@ -110,6 +110,7 @@
 #define DSUFFIX		"$(SUFFIX)"
 #define DSYSHDRS	"$(SYSHDRS)"
 #define DVPATH		"$(VPATH)"
+
 /*
  * Predefined ${macro} instances
  */
@@ -133,6 +134,7 @@
 #define dSUFFIX		"${SUFFIX}"
 #define dSYSHDRS	"${SYSHDRS}"
 #define dVPATH		"${VPATH}"
+
 /*
  * Predefined macro values
  */
@@ -144,12 +146,14 @@
 #define VDESTDIR		4
 #define VPROGRAM		5
 #define VLIBRARY		6
+
 /*
  * Predefined template suffixes
  */
 #define SPROGRAM		".p"
 #define SLIBRARY		".l"
 #define SLIBRARY2		".L"
+
 /*
  * Include statement styles
  */
@@ -158,22 +162,28 @@
 #define INCLUDE_CXX		2	/* #include "file" for C++ */
 #define INCLUDE_FORTRAN		3	/* include "file" or #include "file" */
 #define INCLUDE_PASCAL		4	/* #include "file" */
+
 /*
  * Marker to indicate start of included file dependencies
  */
 #define DEPENDMARK		"###"
+
 /*
  * Mkmf directories
  */
 #ifndef INSTALLDIR
-#  define INSTALLDIR	"/usr/contrib"
+#define INSTALLDIR	"/usr"
 #endif
 #define MKMFLIB		"lib/mkmf"
 
-// badopt.c
+/*
+ * Functions defined in badopt.c
+ */
 void  badopt(char, char);
 
-// buildlist.c
+/*
+ * Functions defined in buildlist.c
+ */
 int   buftolist(char*, SLIST*);
 int   buildliblist(void);
 int   buildsrclist(void);
@@ -182,7 +192,9 @@ int   expandlibpath(char*, char*, SLIST*);
 int   libbuftolist(char*, SLIST*, SLIST*);
 int   read_dir(char*, int (*)(char*, char*, int), int, int);
 
-// depend.c
+/*
+ * Functions defined in depend.c
+ */
 void     addincdir(void);
 int      findinclude(char*, char*, char*, int);
 void     getI(char*, char*, SLIST*);
@@ -197,21 +209,31 @@ INCBLK*  readF(char*, int, char *, int);
 INCBLK*  readP(char*, int, char *, int);
 int      initsysinclude(void);
 
-// editmf.c
+/*
+ * Functions defined in editmf.c
+ */
 void  editmf(char*, char*);
 
-// getcwp.c
+/*
+ * Functions defined in getcwp.c
+ */
 char* getcwp(void);
 
-// getproject.c
+/*
+ * Functions defined in getproject.c
+ */
 void  getproject(void);
 
-// iolin.c
+/*
+ * Functions defined in iolin.c
+ */
 char* getlin(FILE*);
 void  purgcontinue(FILE*);
 void  putlin(FILE*);
 
-// macro.c
+/*
+ * Functions defined in macro.c
+ */
 char* findmacro(char*, char*);
 char* getmacro(char*, FILE*);
 void  putmacro(char*, FILE*);
@@ -221,7 +243,9 @@ int   storemacro(char*);
 int   storenvmacro(void);
 int   storedynmacro(void);
 
-// misc.c
+/*
+ * Functions defined in misc.c
+ */
 void  answer(char*, int);
 int   fastcopy(char*, FILE*);
 int   findmf(char*, char*, TARGET*);
@@ -235,58 +259,65 @@ void  nocore(void);
 int   putobj(char*, FILE*);
 int   readmf(char*, TARGET*);
 
-// mksrclist.c
+/*
+ * Functions defined in mksrclist.c
+ */
 int   mksrclist(int, int);
 int   addsrclist(char*, char*, int);
 
-// mksymlink.c
+/*
+ * Functions defined in mksymlink.c
+ */
 int   mksymlink(int, int);
 
-// mustfopen.c
+/*
+ * Functions defined in mustfopen.c
+ */
 FILE* mustfopen(char*, char*);
 
-// optpath.c
+/*
+ * Functions defined in optpath.c
+ */
 char* optpath(char*);
 
-// pathcat.c
+/*
+ * Functions defined in pathcat.c
+ */
 char* pathcat(char*, char*, char*);
 
-// pathhead.c
+/*
+ * Functions defined in pathhead.c
+ */
 char* pathhead(char*);
 
-// pperror.c
+/*
+ * Functions defined in pperror.c
+ */
 void  pperror(char*);
 
-// rule.c
-int   applyrule(char*, char*);
-int   buildruletable(void);
-char* findrule(char*, char*);
-int   instalrule(char*);
-int   lookuprule(char*);
-void  makerule(char*, char*, char*);
-int   storerule(char *rulename);
-
-// slsort.c
+/*
+ * Functions defined in slsort.c
+ */
 int   slsort(int (*)(const char*, const char*), SLIST*);
 
-// strpcpy.c
+/*
+ * Functions defined in strpcpy.c
+ */
 char* strpcpy(char*, char*);
 
-// strsav.c
+/*
+ * Functions defined in strsav.c
+ */
 char* strsav(char*);
 
-// suffix.c
-int   buildsfxtable(void);
-int   installsfx(char*, int, char*);
-int   mapsuffixtokey(char*);
-int   lookuptypeofinclude(char*);
-int   lookupsfx(char*);
-int   sfxbuftotable(char*);
-
-// usage.c
+/*
+ * Functions defined in usage.c
+ */
 void  usage(char*);
 
-// warn.c
+/*
+ * Functions defined in warn.c
+ */
 void  warn(char*);
 void  warns(char*, char*);
 void  warn2(char*, char*, char*);

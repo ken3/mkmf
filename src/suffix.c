@@ -67,18 +67,15 @@ int buildsfxtable(void)
 	int i;				/* suffix list counter */
 
 	/* default suffix list */
-	for (i = 0; DEFSFX[i].suffix != NULL; i++)
-		if (installsfx(DEFSFX[i].suffix, DEFSFX[i].sfxtyp,
-		    DEFSFX[i].incspec) == NO)
-			return(NO);
+	for (i = 0; DEFSFX[i].suffix != NULL; i++) {
+		if (installsfx(DEFSFX[i].suffix, DEFSFX[i].sfxtyp, DEFSFX[i].incspec) == NO) return NO;
+	}
 	
 	/* supplementary suffix definitions */
-	if ((htb = htlookup(MSUFFIX, MDEFTABLE)) != NULL)
-		{
-		if (sfxbuftotable(htb->h_def) == NO)
-			return(NO);
-		}
-	return(YES);
+	if ((htb = htlookup(MSUFFIX, MDEFTABLE)) != NULL) {
+		if (sfxbuftotable(htb->h_def) == NO) return NO;
+	}
+	return YES;
 }
 
 
@@ -98,25 +95,20 @@ int installsfx(char *suffix, int sfxtyp, char *incspec)
 	int sfxindex;			/* index into suffix tables */
 	SFXBLK *sfxblk;			/* suffix list block */
 
-	if (*suffix == '.')
-		suffix++;
+	if (*suffix == '.') suffix++;
 	sfxindex = suffix[0];
-	if (suffix[0] == '\0' || suffix[1] == '\0')
-		{
+	if (suffix[0] == '\0' || suffix[1] == '\0') {
 		SFX1[sfxindex] = sfxtyp;	/* 0 or 1 character suffix */
 		INC1[sfxindex] = mapsuffixtokey(incspec);
-		}
-	else	{				/* 2+ character suffix */
-		if ((sfxblk = (SFXBLK *) malloc(sizeof(SFXBLK))) == NULL)
-			return(NO);
-		if ((sfxblk->sfx.suffix = strsav(suffix)) == NULL)
-			return(NO);
+	} else {				/* 2+ character suffix */
+		if ((sfxblk = (SFXBLK *) malloc(sizeof(SFXBLK))) == NULL) return NO;
+		if ((sfxblk->sfx.suffix = strsav(suffix)) == NULL) return NO;
 		sfxblk->sfx.sfxtyp = sfxtyp;
 		sfxblk->sfx.inctyp = mapsuffixtokey(incspec);
 		sfxblk->next = SFX2[sfxindex];
 		SFX2[sfxindex] = sfxblk;
-		}
-	return(YES);
+	}
+	return YES;
 }
 
 
@@ -130,13 +122,12 @@ int mapsuffixtokey(char *spec)
 {
 	int i;				/* INCKEY index */
 
-	if (spec == NULL)
-		return(INCLUDE_NONE);
+	if (spec == NULL) return INCLUDE_NONE;
 
-	for (i = 0; INCKEY[i].incspec != NULL; i++)
-		if (EQUAL(INCKEY[i].incspec, spec))
-			break;
-	return(INCKEY[i].inctyp);
+	for (i = 0; INCKEY[i].incspec != NULL; i++) {
+		if (EQUAL(INCKEY[i].incspec, spec)) break;
+	}
+	return INCKEY[i].inctyp;
 }
 
 
@@ -150,13 +141,14 @@ int lookuptypeofinclude(char *suffix)
 {
 	SFXBLK *sfxblk;			/* suffix block pointer */
 
-	if (suffix[0] == '\0' || suffix[1] == '\0')
-		return(INC1[*suffix]);		/* 0 or 1 char suffix */
+	if (suffix[0] == '\0' || suffix[1] == '\0') {
+		return INC1[*suffix];		/* 0 or 1 char suffix */
+	}
 						/* 2+ character suffix */
-	for (sfxblk = SFX2[*suffix]; sfxblk != NULL; sfxblk = sfxblk->next)
-		if (EQUAL(suffix, sfxblk->sfx.suffix))
-			return(sfxblk->sfx.inctyp);
-	return(0);
+	for (sfxblk = SFX2[*suffix]; sfxblk != NULL; sfxblk = sfxblk->next) {
+		if (EQUAL(suffix, sfxblk->sfx.suffix)) return sfxblk->sfx.inctyp;
+	}
+	return 0;
 }
 
 
@@ -169,13 +161,14 @@ int lookupsfx(char *suffix)
 {
 	SFXBLK *sfxblk;			/* suffix block pointer */
 
-	if (suffix[0] == '\0' || suffix[1] == '\0')
-		return(SFX1[*suffix]);		/* 0 or 1 char suffix */
+	if (suffix[0] == '\0' || suffix[1] == '\0') {
+		return SFX1[*suffix];		/* 0 or 1 char suffix */
+	}
 						/* 2+ character suffix */
-	for (sfxblk = SFX2[*suffix]; sfxblk != NULL; sfxblk = sfxblk->next)
-		if (EQUAL(suffix, sfxblk->sfx.suffix))
-			return(sfxblk->sfx.sfxtyp);
-	return(0);
+	for (sfxblk = SFX2[*suffix]; sfxblk != NULL; sfxblk = sfxblk->next) {
+		if (EQUAL(suffix, sfxblk->sfx.suffix)) return sfxblk->sfx.sfxtyp;
+	}
+	return 0;
 }
 
 
@@ -204,26 +197,18 @@ int sfxbuftotable(char *sfxbuf)
 	char *sfxtyp;			/* suffix type */
 	char suffix[SUFFIXSIZE+2];	/* suffix + modifier */
 
-	while ((sfxbuf = gettoken(suffix, sfxbuf)) != NULL)
-		if ((sfxtyp = strrchr(suffix, ':')) == NULL)
-			{
-			if (installsfx(suffix, SFXSRC, NULL) == NO)
-				return(NO);
-			}
-		else	{
+	while ((sfxbuf = gettoken(suffix, sfxbuf)) != NULL) {
+		if ((sfxtyp = strrchr(suffix, ':')) == NULL) {
+			if (installsfx(suffix, SFXSRC, NULL) == NO) return NO;
+		} else {
 			*sfxtyp = '\0';
-			if (sfxtyp[1] == '\0')
-				{
-				if (installsfx(suffix, sfxtyp[1], NULL) == NO)
-					return(NO);
-				}
-			else
-				{
-				if (installsfx(suffix, sfxtyp[1], sfxtyp+2) == NO)
-					return(NO);
-				}
-			if (sfxtyp[1] == SFXOBJ)
-				strcpy(OBJSFX, suffix);
+			if (sfxtyp[1] == '\0') {
+				if (installsfx(suffix, sfxtyp[1], NULL) == NO) return NO;
+			} else {
+				if (installsfx(suffix, sfxtyp[1], sfxtyp+2) == NO) return NO;
 			}
-	return(YES);
+			if (sfxtyp[1] == SFXOBJ) strcpy(OBJSFX, suffix);
+		}
+	}
+	return YES;
 }

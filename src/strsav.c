@@ -53,7 +53,6 @@ strsav(char *s)
 {
 	char *sptr;			/* somewhere string pointer */
 
-	if ((sptr = malloc((unsigned)(strlen(s)+1))) == NULL)
-		return(NULL);
-	return(strcpy(sptr, s));
+	if ((sptr = malloc((unsigned)(strlen(s)+1))) == NULL) return NULL;
+	return strcpy(sptr, s);
 }

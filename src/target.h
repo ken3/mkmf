@@ -47,10 +47,10 @@
 /*
  * Target struct
  */
-typedef struct _target
-	{
+typedef struct _target {
 	int type;			/* prog, lib, or other target type */
 	int dest;			/* target destination flag */
-	} TARGET;
+} TARGET;
+
 #endif /* _TARGET_H_INCLUDED */
 

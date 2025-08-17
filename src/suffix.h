@@ -1,3 +1,6 @@
+#ifndef _SUFFIX_H_INCLUDED
+#define _SUFFIX_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -40,8 +43,6 @@
  *
  * Author: Peter J. Nicklin
  */
-#ifndef SUFFIX_H
-#define SUFFIX_H
 
 /*
  * Suffix types 
@@ -55,24 +56,32 @@
 /*
  * Suffix/include table structs
  */
-typedef struct _mapinclude
-	{
+typedef struct _mapinclude {
 	char *incspec;			/* user spec for include files */
 	int inctyp;			/* type of included file */
-	} MAPINCLUDE;
+} MAPINCLUDE;
 
-typedef struct _suffix
-	{
+typedef struct _suffix {
 	char *suffix;			/* points to a suffix */
 	int sfxtyp;			/* type of file name suffix */
 	int inctyp;			/* type of included file */
 	char *incspec;			/* default included file user spec */
-	} SUFFIX;
+} SUFFIX;
 
-typedef struct _sfxblk
-	{
+typedef struct _sfxblk {
 	SUFFIX sfx;			/* suffix struct */
 	struct _sfxblk *next;		/* ptr to next suffix list block */
-	} SFXBLK;
+} SFXBLK;
 
-#endif /* SUFFIX_H */
+/*
+ * Functions defined in suffix.c
+ */
+int   buildsfxtable(void);
+int   installsfx(char*, int, char*);
+int   mapsuffixtokey(char*);
+int   lookuptypeofinclude(char*);
+int   lookupsfx(char*);
+int   sfxbuftotable(char*);
+
+#endif /* _SUFFIX_H_INCLUDED */
+

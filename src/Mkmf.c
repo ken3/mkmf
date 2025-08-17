@@ -47,9 +47,10 @@
 #include "hash.h"
 #include "null.h"
 #include "path.h"
-#include "target.h"
+#include "rule.h"
 #include "slist.h"
 #include "suffix.h"
+#include "target.h"
 #include "yesno.h"
 
 char *MAKEFILE = "C";			/* default makefile template language */
@@ -69,20 +70,20 @@ SLIST *SRCLIST;				/* source file name list */
 HASH *MDEFTABLE;			/* macro definition table */
 
 char *DEFRULE[] =			/* default preprocessor rules */
-	{
-#include "defaultrul.h"
+{
+	#include "defaultrul.h"
 	NULL
-	};
+};
 
 SUFFIX DEFSFX[] =			/* default suffix list */
-	{
-#include "defaultsfx.h"
-	};
+{
+	#include "defaultsfx.h"
+};
 
 MAPINCLUDE INCKEY[] =			/* include style lookup table */
-	{
-#include "inckey.h"
-	};
+{
+	#include "inckey.h"
+};
 
 void editmf(char *mfname, char *mfpath);		/* edit makefile */
 
@@ -96,182 +97,166 @@ int main(int argc, char **argv)
 	int status = 0;			/* exit status */
 	short iflag = NO;		/* interactive flag */
 	TARGET target;			/* type of makefile target */
+	char *s;			/* option pointer */
 
 	target.type = target.dest = VUNKNOWN;
 
-	{
-	char *s;		/* option pointer */
-	while (--argc > 0 && **++argv == '-')
-		{
-		for (s = argv[0]+1; *s != '\0'; s++)
-			switch (*s)
-				{
-				case 'F':
-					MAKEFILE = GETARG(s);
-					if (MAKEFILE==NULL || *MAKEFILE=='\0')
-						{
-						warn("missing template name");
-						status = 1;
-						}
-					FFLAG = YES;
-					goto endfor;
-				case 'L':
-					LIBOBJ = 1;
-					target.type = VLIBRARY;
-					break;
-				case 'M':
-					MAKEFILE = GETARG(s);
-					if (MAKEFILE==NULL || *MAKEFILE=='\0')
-						{
-						warn("missing template name");
-						status = 1;
-						}
-					goto endfor;
-				case 'S':
-					MKSYMLINK++;
-					break;
-				case 'a':
-					AFLAG = YES;
-					break;
-				case 'c':
-					CFLAG = NO;
-					break;
-				case 'd':
-					/* turn OFF dependency analysis */
-					DEPEND = 0;
-					break;
-				case 'e':
-					EFLAG = YES;
-					break;
-				case 'f':
-					mfname = GETARG(s);
-					if (mfname == NULL || *mfname == '\0')
-						{
-						warn("missing makefile name");
-						status = 1;
-						}
-					goto endfor;
-				case 'i':
-					iflag = YES;
-					break;
-				case 'l':
-					target.type = VLIBRARY;
-					break;
-				default:
-					badopt(**argv, *s);
+	while (--argc > 0 && **++argv == '-') {
+		for (s = argv[0]+1; *s != '\0'; s++) {
+			switch (*s) {
+			case 'F':
+				MAKEFILE = GETARG(s);
+				if (MAKEFILE==NULL || *MAKEFILE=='\0') {
+					warn("missing template name");
 					status = 1;
-					goto endfor;
 				}
-		endfor: continue;
+				FFLAG = YES;
+				// goto endfor;
+				break;
+			case 'L':
+				LIBOBJ = 1;
+				target.type = VLIBRARY;
+				break;
+			case 'M':
+				MAKEFILE = GETARG(s);
+				if (MAKEFILE==NULL || *MAKEFILE=='\0') {
+					warn("missing template name");
+					status = 1;
+				}
+				// goto endfor;
+				break;
+			case 'S':
+				MKSYMLINK++;
+				break;
+			case 'a':
+				AFLAG = YES;
+				break;
+			case 'c':
+				CFLAG = NO;
+				break;
+			case 'd':
+				/* turn OFF dependency analysis */
+				DEPEND = 0;
+				break;
+			case 'e':
+				EFLAG = YES;
+				break;
+			case 'f':
+				mfname = GETARG(s);
+				if (mfname == NULL || *mfname == '\0') {
+					warn("missing makefile name");
+					status = 1;
+				}
+				// goto endfor;
+				break;
+			case 'i':
+				iflag = YES;
+				break;
+			case 'l':
+				target.type = VLIBRARY;
+				break;
+			default:
+				badopt(**argv, *s);
+				status = 1;
+				// goto endfor;
+				break;
+			}
+		// endfor:
+		// 	continue;
 		}
 	}
-	
+
 	/* initialize macro definition table */
 	MDEFTABLE = htinit(MDEFTABLESIZE);
 
 	/* get command line macro definitions */
-	for (; argc > 0; argc--, argv++)
-		if (storemacro(*argv) == NO)
-			{
+	for (; argc > 0; argc--, argv++) {
+		if (storemacro(*argv) == NO) {
 			warns("%s not a macro definition", *argv);
 			status = 1;
-			}
+		}
+	}
 
-	if (status == 1)
-		{
+	if (status == 1) {
 		usage("[-acdeilS] [-f makefile] [-F template] [-M language]\n       [macroname=value...]");
 		exit(1);
-		}
+	}
 
 	/*
 	 * store macro definition placeholders that will be generated later
 	 * unless specified on the command line
 	 */
-	if (storedynmacro() == NO)
-		exit(1);
+	if (storedynmacro() == NO) exit(1);
 
 
 	/* environment variables override makefile macro definitions */
-	if (EFLAG == YES)
-		{
-		if (storenvmacro() == NO)
-			exit(1);
-		}
+	if (EFLAG == YES) {
+		if (storenvmacro() == NO) exit(1);
+	}
 
 
 	/* determine the makefile name */
-	if (mfname == NULL)
-		if ((htb = htlookup(MMAKEFILE, MDEFTABLE)) != NULL)
+	if (mfname == NULL) {
+		if ((htb = htlookup(MMAKEFILE, MDEFTABLE)) != NULL) {
 			mfname = htb->h_def;
-		else if (FILEXIST("makefile"))
+		} else if (FILEXIST("makefile")) {
 			mfname = "makefile";
-		else if (FILEXIST("Makefile"))
+		} else if (FILEXIST("Makefile")) {
 			mfname = "Makefile";
-		else
+		} else {
 			mfname = "Makefile";
-	if (htinstall(MMAKEFILE, mfname, VREADWRITE, MDEFTABLE) == NULL)
-		exit(1);
+		}
+	}
+	if (htinstall(MMAKEFILE, mfname, VREADWRITE, MDEFTABLE) == NULL) exit(1);
 
 
 	/* find the makefile (template) and load useful macro definitions */
-	if (target.type == VUNKNOWN)
-		{
-		if (htlookup(MPROGRAM, MDEFTABLE) != NULL)
+	if (target.type == VUNKNOWN) {
+		if (htlookup(MPROGRAM, MDEFTABLE) != NULL) {
 			target.type = VPROGRAM;
-		else if (htlookup(MLIBRARY, MDEFTABLE) != NULL)
+		} else if (htlookup(MLIBRARY, MDEFTABLE) != NULL) {
 			target.type = VLIBRARY;
 		}
-	if (findmf(mfname, mfpath, &target) == NO)
-		exit(1);
+	}
+	if (findmf(mfname, mfpath, &target) == NO) exit(1);
 	
 	/* search system header files? */
-	if ((htb = htlookup(MSYSHDRS, MDEFTABLE)) != NULL)
-		SYSHDRS = YES;
+	if ((htb = htlookup(MSYSHDRS, MDEFTABLE)) != NULL) SYSHDRS = YES;
 
 	/* interactive option */
-	if (iflag == YES)
-		{
+	if (iflag == YES) {
 		if (htlookup(MPROGRAM, MDEFTABLE) == NULL &&
-		    htlookup(MLIBRARY, MDEFTABLE) == NULL)
-			if (target.type == VPROGRAM)
-				{
+		    htlookup(MLIBRARY, MDEFTABLE) == NULL) {
+			if (target.type == VPROGRAM) {
 				printf("program name? ");
 				answer(MPROGRAM, VREADWRITE);
-				}
-			else if (target.type == VLIBRARY)
-				{
+			} else if (target.type == VLIBRARY) {
 				printf("library name? ");
 				answer(MLIBRARY, VREADWRITE);
-				}
-		if (htlookup(MDESTDIR, MDEFTABLE) == NULL && target.dest == VDESTDIR)
-			{
-			printf("destination directory? ");
-			answer(MDESTDIR, VREADWRITE);
 			}
 		}
+		if (htlookup(MDESTDIR, MDEFTABLE) == NULL && target.dest == VDESTDIR) {
+			printf("destination directory? ");
+			answer(MDESTDIR, VREADWRITE);
+		}
+	}
 
 	/* load environment variables into macro definitions */
-	if (EFLAG == NO)
-		{
-		if (storenvmacro() == NO)
-			exit(1);
-		}
+	if (EFLAG == NO) {
+		if (storenvmacro() == NO) exit(1);
+	}
 
 	/* build the suffix table */
-	if (buildsfxtable() == NO)
-		exit(1);
+	if (buildsfxtable() == NO) exit(1);
 
 	/* build the rule table */
-	if (buildruletable() == NO)
-		exit(1);
+	if (buildruletable() == NO) exit(1);
 
 	/* build the source code and header file name lists */
-	if (buildsrclist() == NO)
-		exit(1);
+	if (buildsrclist() == NO) exit(1);
 
 	/* build the library pathname list */
-	if (buildliblist() == NO)
-		exit(1);
+	if (buildliblist() == NO) exit(1);
 
 	/* edit makefile */
 	editmf(mfname, mfpath);

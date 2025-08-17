@@ -68,25 +68,27 @@ optpath(char *pathname)
 	bp = fp = up = pathname;
 
 	/* elimination of initial "./" causes no harmful side-effects */
-	if (fp[0] == _CDIRC && fp[1] == _PSC) fp += 2;
+	if (fp[0] == _CDIRC && fp[1] == _PSC) {
+		fp += 2;
 #ifdef _HasNetRoot
-	else if (fp[0] == _PSC)
+	} else if (fp[0] == _PSC) {
 		*bp++ = *fp++;	/* allow initial "//": see note 1 */
 #endif
-	while (*fp != '\0')
-		if (fp[0] == _PSC)
-			if (fp[1] == _PSC || fp[1] == '\0')
+	}
+	while (*fp != '\0') {
+		if (fp[0] == _PSC) {
+			if (fp[1] == _PSC || fp[1] == '\0') {
 				fp += 1;	/* "//" or trailing `/' */
-			else if (fp[1]==_CDIRC && (fp[2]==_PSC || fp[2]=='\0'))
+			} else if (fp[1]==_CDIRC && (fp[2]==_PSC || fp[2]=='\0')) {
 				fp += 2;	/* `.' */
-			else	{
+			} else {
 				*bp++ = *fp++;
-				}
-		else	{
-			*bp++ = *fp++;
 			}
-	if (bp == pathname && *pathname != '\0')
-		*bp++ = (absolute_path) ? _RDIRC : _CDIRC;
+		} else {
+			*bp++ = *fp++;
+		}
+	}
+	if (bp == pathname && *pathname != '\0') *bp++ = (absolute_path) ? _RDIRC : _CDIRC;
 	*bp = '\0';
-	return(pathname);
+	return pathname;
 }

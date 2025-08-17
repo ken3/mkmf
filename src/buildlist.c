@@ -49,6 +49,7 @@
 #include "hash.h"
 #include "null.h"
 #include "path.h"
+#include "rule.h"
 #include "slist.h"
 #include "stringx.h"
 #include "suffix.h"
@@ -75,12 +76,10 @@ int buftolist(char *buf, SLIST *list)
 {
 	char token[PATHSIZE];		/* item buffer */
 
-	while ((buf = gettoken(token, buf)) != NULL)
-		{
-		if (slappend(token, list) == NULL)
-			return(NO);
-		}
-	return(YES);
+	while ((buf = gettoken(token, buf)) != NULL) {
+		if (slappend(token, list) == NULL) return(NO);
+	}
+	return YES;
 }
 
 
@@ -102,53 +101,43 @@ int buildliblist(void)
 	libpathlist = slinit();		
 
 	/* -L library path specification */
-	if (htlookup(MLDFLAGS, MDEFTABLE) != NULL)
-		{
+	if (htlookup(MLDFLAGS, MDEFTABLE) != NULL) {
 		lp = htdef(MDEFTABLE);
-		while ((lp = getoption(lpath, lp, "-L")) != NULL)
-			{
-			if (*lpath == '\0')
-				{ 
+		while ((lp = getoption(lpath, lp, "-L")) != NULL) {
+			if (*lpath == '\0') { 
 				warns("missing library in %s macro definition",
 				       htkey(MDEFTABLE));
 				break;
-				}
-			else	{
+			} else {
 				strcat(lpath, "/lib");
-				if (slappend(lpath, libpathlist) == NULL)
-					return(NO);
-				}
+				if (slappend(lpath, libpathlist) == NULL) return NO;
 			}
 		}
+	}
 
 	/* LPATH environment variable library path specification */
-	if (htlookup(MLPATH, MDEFTABLE) != NULL && *htdef(MDEFTABLE) != '\0')
-		{
+	if (htlookup(MLPATH, MDEFTABLE) != NULL && *htdef(MDEFTABLE) != '\0') {
 		lp = htdef(MDEFTABLE);
-		while ((lp = getpath(lpath, lp)) != NULL)
-			{
+		while ((lp = getpath(lpath, lp)) != NULL) {
 			strcat(lpath, "/lib");
-			if (slappend(lpath, libpathlist) == NULL)
-				return(NO);
-			}
+			if (slappend(lpath, libpathlist) == NULL) return NO;
 		}
-	else	{
+	} else {
 		if (slappend("/lib/lib", libpathlist) == NULL ||
-		    slappend("/usr/lib/lib", libpathlist) == NULL)		
-			return(NO);
+		    slappend("/usr/lib/lib", libpathlist) == NULL) {
+			return NO;
 		}
+	}
 
 	/* search for the libraries */
 	LIBLIST = NULL;
-	if ((htb = htlookup(MLIBLIST, MDEFTABLE)) != NULL)
-		{
+	if ((htb = htlookup(MLIBLIST, MDEFTABLE)) != NULL) {
 		LIBLIST = slinit();
-		if (libbuftolist(htb->h_def, libpathlist, LIBLIST) == NO)
-			return(NO);
-		}
+		if (libbuftolist(htb->h_def, libpathlist, LIBLIST) == NO) return NO;
+	}
 	slrm(libpathlist);
 	htrm(MLIBLIST, MDEFTABLE);
-	return(YES);
+	return YES;
 }
 
 
@@ -171,41 +160,29 @@ int buildsrclist(void)
 
 	/* build lists from command line macro definitions */
 	if ((headhtb = htlookup(MHEADERS, MDEFTABLE)) != NULL &&
-	     headhtb->h_val == VREADWRITE)
-		{
-		if (buftolist(headhtb->h_def, HEADLIST) == NO)
-			return(NO);
+	     headhtb->h_val == VREADWRITE) {
+		if (buftolist(headhtb->h_def, HEADLIST) == NO) return NO;
 		needhdr = 0;
-		}
+	}
 	if ((srchtb = htlookup(MSOURCES, MDEFTABLE)) != NULL &&
-	     srchtb->h_val == VREADWRITE)
-		{
-		if (buftolist(srchtb->h_def, SRCLIST) == NO)
-			return(NO);
+	     srchtb->h_val == VREADWRITE) {
+		if (buftolist(srchtb->h_def, SRCLIST) == NO) return NO;
 		needsrc = 0;
-		}
+	}
 	
 	/* read directories to get source and header file names */
-	if (needhdr || needsrc)
-		{
-		if (MKSYMLINK)
-			{
-			if (mksymlink(needsrc, needhdr) == NO)
-				return(NO);
-			}
-		else	{
-			if (mksrclist(needsrc, needhdr) == NO)
-				return(NO);
-			}
+	if (needhdr || needsrc) {
+		if (MKSYMLINK) {
+			if (mksymlink(needsrc, needhdr) == NO) return NO;
+		} else {
+			if (mksrclist(needsrc, needhdr) == NO) return NO;
 		}
+	}
 
-	if (slsort(strcmp, HEADLIST) == NO)
-		return(NO);
-	if (slsort(strcmp, SRCLIST) == NO)
-		return(NO);
-	if (SLNUM(SRCLIST) > 0 && uniqsrclist() == NO)
-		return(NO);
-	return(YES);
+	if (slsort(strcmp, HEADLIST) == NO) return NO;
+	if (slsort(strcmp, SRCLIST) == NO) return NO;
+	if (SLNUM(SRCLIST) > 0 && uniqsrclist() == NO) return NO;
+	return YES;
 }
 
 
@@ -224,17 +201,13 @@ int expandlibpath(char *libtoken, char *libpath, SLIST *libpathlist)
 	SLBLK *cblk;			/* current list block */
 
 	libtoken += 2;			/* skip -l option */
-	for (cblk = libpathlist->head; cblk != NULL; cblk = cblk->next)
-		{
+	for (cblk = libpathlist->head; cblk != NULL; cblk = cblk->next) {
 		lp = strpcpy(libpath, cblk->key);
 		lp = strpcpy(lp, libtoken);
 		(void) strpcpy(lp, ".a");
-		if (FILEXIST(libpath))
-			{
-			return(YES);
-			}
-		}
-	return(NO);
+		if (FILEXIST(libpath)) return YES;
+	}
+	return NO;
 }
 
 
@@ -251,25 +224,18 @@ int libbuftolist(char *libmacrobuf, SLIST *libpathlist, SLIST *liblist)
 	char libpath[PATHSIZE];		/* library pathname */
 	char libtoken[PATHSIZE];	/* library file option */
 
-	while ((libmacrobuf = gettoken(libtoken, libmacrobuf)) != NULL)
-		{
-		if (libtoken[0] == '-' && libtoken[1] == 'l')
-			{
-			if (expandlibpath(libtoken, libpath, libpathlist) == NO)
-				{
+	while ((libmacrobuf = gettoken(libtoken, libmacrobuf)) != NULL) {
+		if (libtoken[0] == '-' && libtoken[1] == 'l') {
+			if (expandlibpath(libtoken, libpath, libpathlist) == NO) {
 				warns("can't find library %s", libtoken);
-				}
-			else	{
-				if (slappend(libpath, liblist) == NULL)
-					return(NO);
-				}
+			} else {
+				if (slappend(libpath, liblist) == NULL) return NO;
 			}
-		else	{
-			if (slappend(libtoken, liblist) == NULL)
-				return(NO);
-			}
+		} else {
+			if (slappend(libtoken, liblist) == NULL) return NO;
 		}
-	return(YES);
+	}
+	return YES;
 }
 
 
@@ -290,42 +256,32 @@ int read_dir(char *dirname, int (*addfile)(char*, char*, int), int needsrc, int 
 	DIRENT *dp;			/* directory entry pointer */
 	int sfxtyp;			/* type of suffix */
 
-	if ((dirp = opendir(dirname)) == NULL)
-		{
+	if ((dirp = opendir(dirname)) == NULL) {
 		warns("%s: can't open directory", dirname);
-		return(NO);
-		}
-	for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp))
-		{
+		return NO;
+	}
+	for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp)) {
 		if ((suffix = (char*)strrchr(dp->d_name, '.')) == 0 ||
 		    (*dp->d_name == '.' && AFLAG == NO) ||
-		    (*dp->d_name == '#'))
+		    (*dp->d_name == '#')) {
 			continue;
+		}
 		suffix++;
 		sfxtyp = lookupsfx(suffix);
-		if (sfxtyp == SFXSRC)
-			{
-			if (needsrc)
-				{
-				if (strncmp(dp->d_name, "s.", 2) == 0)
-					continue; /* skip SCCS files */
-				if ((*addfile)(dirname, dp->d_name, 's') == NO)
-					return(NO);
-				}
+		if (sfxtyp == SFXSRC) {
+			if (needsrc) {
+				if (strncmp(dp->d_name, "s.", 2) == 0) continue; /* skip SCCS files */
+				if ((*addfile)(dirname, dp->d_name, 's') == NO) return NO;
 			}
-		else if (sfxtyp == SFXHEAD)
-			{
-			if (needhdr)
-				{
-				if (strncmp(dp->d_name, "s.", 2) == 0)
-					continue; /* skip SCCS files */
-				if ((*addfile)(dirname, dp->d_name, 'h') == NO)
-					return(NO);
-				}
+		} else if (sfxtyp == SFXHEAD) {
+			if (needhdr) {
+				if (strncmp(dp->d_name, "s.", 2) == 0) continue; /* skip SCCS files */
+				if ((*addfile)(dirname, dp->d_name, 'h') == NO) return NO;
 			}
 		}
+	}
 	closedir(dirp);
-	return(YES);
+	return YES;
 }
 
 
@@ -344,28 +300,22 @@ int uniqsrclist(void)
 	uintptr_t length;		/* source file basename length */
 	SLBLK **slv;			/* ptr to singly-linked list vector */
 
-	if ((slv = slvect(SRCLIST)) == NULL)
-		return(NO);
+	if ((slv = slvect(SRCLIST)) == NULL) return NO;
 	lbi = SLNUM(SRCLIST) - 1;
-	for (fbi=0, cbi=1; cbi <= lbi; cbi++)
-		{
+	for (fbi=0, cbi=1; cbi <= lbi; cbi++) {
 		length = (uintptr_t)strrchr(slv[cbi]->key, '.') - (uintptr_t)slv[cbi]->key + 1;
-		if (strncmp(slv[fbi]->key, slv[cbi]->key, length) == 0)
-			{
+		if (strncmp(slv[fbi]->key, slv[cbi]->key, length) == 0) {
 			continue;	/* find end of matching block */
-			}
-		else if (cbi - fbi > 1)
-			{
+		} else if (cbi - fbi > 1) {
 			uniqsrcfile(fbi, cbi-fbi, slv);
-			}
+		}
 		fbi = cbi;
-		}
-	if (cbi - fbi > 1)		/* do last matching block */
-		{
+	}
+	if (cbi - fbi > 1) {		/* do last matching block */
 		uniqsrcfile(fbi, cbi-fbi, slv);
-		}
+	}
 	slvtol(SRCLIST, slv);
-	return(YES);
+	return YES;
 }
 
 
@@ -395,19 +345,16 @@ void uniqsrcfile(int fbi, int nb, SLBLK **slv)
 	nu  = nb;
 	fbp = slv[fbi];
 
-	for (i=0, ibp=fbp; i < nb; i++, ibp=ibp->next)
-		{
-		for (j=0, jbp=fbp; j < nb; j++, jbp=jbp->next)
-			{
-			if (i != j && slv[fbi+j] != NULL)
-				{
+	for (i=0, ibp=fbp; i < nb; i++, ibp=ibp->next) {
+		for (j=0, jbp=fbp; j < nb; j++, jbp=jbp->next) {
+			if (i != j && slv[fbi+j] != NULL) {
 				makerule(rule, ibp->key, jbp->key);
-				if (lookuprule(rule) == YES)
-					{
+				if (lookuprule(rule) == YES) {
 					slv[fbi+j] = NULL;
 					if (--nu < 2) return;
-					}
 				}
 			}
 		}
+	}
+	return;
 }

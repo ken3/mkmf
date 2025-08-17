@@ -53,13 +53,12 @@ slinit(void)
 {
 	SLIST *slist;			/* pointer to list head block */
 
-	if ((slist = (SLIST *) malloc(sizeof(SLIST))) == NULL)
-		{
+	if ((slist = (SLIST *) malloc(sizeof(SLIST))) == NULL) {
 		nocore();
-		return(NULL);
-		}
+		return NULL;
+	}
 	slist->nk = 0;
 	slist->maxkey = 0;
 	slist->head = slist->curblk = slist->tail = NULL;
-	return(slist);
+	return slist;
 }

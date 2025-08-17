@@ -72,25 +72,21 @@ dlappend(int srctyp, SLBLK *srcblk, INCBLK *incblk, DLIST *dlist)
 {
 	DLBLK *dblk;			/* pointer to dependency list block */
 
-	if (dlist == NULL)
-		return(NULL);
-	if ((dblk = (DLBLK *) malloc(sizeof(DLBLK))) == NULL)
-		{
+	if (dlist == NULL) return NULL;
+	if ((dblk = (DLBLK *) malloc(sizeof(DLBLK))) == NULL) {
 		nocore();
-		return(NULL);
-		}
+		return NULL;
+	}
 	dblk->d_src = srcblk;
 	dblk->d_type = srctyp;
 	dblk->d_incl = incblk;
 	dblk->d_next = NULL;
-	if (dlist->d_tail == NULL)
-		{
+	if (dlist->d_tail == NULL) {
 		dlist->d_head = dlist->d_tail = dblk;
-		}
-	else	{
+	} else {
 		dlist->d_tail = dlist->d_tail->d_next = dblk;
-		}
-	return(dblk);
+	}
+	return dblk;
 }
 
 
@@ -104,13 +100,12 @@ dlinit(void)
 {
 	DLIST *dlist;			/* pointer to list head block */
 
-	if ((dlist = (DLIST *) malloc(sizeof(DLIST))) == NULL)
-		{
+	if ((dlist = (DLIST *) malloc(sizeof(DLIST))) == NULL) {
 		nocore();
-		return(NULL);
-		}
+		return NULL;
+	}
 	dlist->d_head = dlist->d_tail = NULL;
-	return(dlist);
+	return dlist;
 }
 
 
@@ -129,21 +124,18 @@ dlprint(DLIST *dlist, FILE *ofp)
 	DLBLK *dblk;			/* pointer to dependency list block */
 	INCBLK *iblk;			/* cur. include file hash table blk */
 
-	if (dlist->d_head != NULL)
-		fprintf(ofp, "%s\n", DEPENDMARK);
-	for (dblk=dlist->d_head; dblk != NULL; dblk=dblk->d_next)
-		{
-		if (lookupinclude(dblk->d_src->key, dblk->d_type) == NULL)
-			{
+	if (dlist->d_head != NULL) fprintf(ofp, "%s\n", DEPENDMARK);
+	for (dblk=dlist->d_head; dblk != NULL; dblk=dblk->d_next) {
+		if (lookupinclude(dblk->d_src->key, dblk->d_type) == NULL) {
 			putobjd(dblk->d_src, ofp);
-			for (iblk=dblk->d_incl; iblk != NULL; iblk=iblk->i_next)
-				{
+			for (iblk=dblk->d_incl; iblk != NULL; iblk=iblk->i_next) {
 				putinchain(iblk->i_hblk, ofp);
-				}
+			}
 			fprintf(ofp, "\n");
 			rmprinttag();
-			}
 		}
+	}
+	return;
 }
 
 
@@ -162,21 +154,18 @@ putinchain(HASHBLK *htb, FILE *ofp)
 
 	putinclude(htb, ofp);
 	htb->h_val = -htb->h_val;
-	for (iblk=htb->h_sub; iblk != NULL; iblk=iblk->i_next)
-		{
-		if (iblk->i_hblk->h_val < 0)
-			{
-			if (iblk->i_loop == NO)
-				{
-				warn2("recursive include nesting of \"%s\" in \"%s\"",
-				      iblk->i_hblk->h_def, htb->h_def);
+	for (iblk=htb->h_sub; iblk != NULL; iblk=iblk->i_next) {
+		if (iblk->i_hblk->h_val < 0) {
+			if (iblk->i_loop == NO) {
+				warn2("recursive include nesting of \"%s\" in \"%s\"", iblk->i_hblk->h_def, htb->h_def);
 				iblk->i_loop = YES;
-				}
-			continue;
 			}
-		putinchain(iblk->i_hblk, ofp);
+			continue;
 		}
+		putinchain(iblk->i_hblk, ofp);
+	}
 	htb->h_val = -htb->h_val;
+	return;
 }
 
 
@@ -197,21 +186,19 @@ putinclude(HASHBLK *htb, FILE *ofp)
 // HASHBLK *htb;			/* include file hash block */
 // FILE *ofp;			/* output stream */
 {
-	if (htb->h_tag == NULL)
-		{
+	if (htb->h_tag == NULL) {
 		COLUMN += htb->h_val + 1;
-		if (COLUMN >= (MAXLINE - 2))
-			{
+		if (COLUMN >= (MAXLINE - 2)) {
 			fprintf(ofp, " \\\n\t%s", htb->h_def);
 			COLUMN = htb->h_val + TABSIZE;
-			}
-		else	{
+		} else {
 			fprintf(ofp, " %s", htb->h_def);
-			}
+		}
 		/* add to "already printed" filenames */
 		htb->h_tag = (printtag == NULL) ? htb :printtag;
 		printtag = htb;
-		}
+	}
+	return;
 }
 
 
@@ -226,6 +213,7 @@ putobjd(SLBLK *srcblk, FILE *ofp)
 {
 	COLUMN = putobj(srcblk->key, ofp) + 1;
 	fprintf(ofp, ":");
+	return;
 }
 
 
@@ -240,10 +228,10 @@ rmprinttag(void)
 	HASHBLK *curhtb;	/* current hash table block */
 	HASHBLK *nxthtb;	/* next hash table block */
 
-	for (curhtb = printtag; curhtb != NULL; curhtb = nxthtb)
-		{
+	for (curhtb = printtag; curhtb != NULL; curhtb = nxthtb) {
 		nxthtb = curhtb->h_tag;
 		curhtb->h_tag = NULL;
-		}
+	}
 	printtag = NULL;
+	return;
 }

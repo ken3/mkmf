@@ -77,68 +77,55 @@ int mksrclist(int needsrc, int needhdr)
 	 * save inode info for current directory so that we can make sure
 	 * that directories in VPATH do not include the current directory.
 	 */
-	if (stat(CURDIR, &CURDIRSTAT) < 0)
-		{
+	if (stat(CURDIR, &CURDIRSTAT) < 0) {
 		pperror(CURDIR);
-		return(NO);
-		}
+		return NO;
+	}
 
 	/*
 	 * if VPATH exists, merge the source file names from the
 	 * directories in VPATH with the source files in the current
 	 * directory, otherwise build source list directly.
 	 */
-	if (htlookup(MVPATH, MDEFTABLE) != NULL)
-		{
+	if (htlookup(MVPATH, MDEFTABLE) != NULL) {
 		vp = htdef(MDEFTABLE);		
 
-		if ((SRCTABLE = htinit(SOURCETABLESIZE)) == NULL)
-			return(NO);
+		if ((SRCTABLE = htinit(SOURCETABLESIZE)) == NULL) return NO;
 	
-		if (read_dir(CURDIR, addsrctable, needsrc, needhdr) == NO)
-			return(NO);
+		if (read_dir(CURDIR, addsrctable, needsrc, needhdr) == NO) return NO;
 
-		while ((vp = getpath(vpath, vp)) != NULL)
-			{
-			if (stat(vpath, &statbuf) < 0)
-				{
+		while ((vp = getpath(vpath, vp)) != NULL) {
+			if (stat(vpath, &statbuf) < 0) {
 				pperror(vpath);
 				continue;
-				}
+			}
 
-			if (!S_ISDIR(statbuf.st_mode))
-				{
+			if (!S_ISDIR(statbuf.st_mode)) {
 				warns("(warning) %s in VPATH not a directory", vpath);
 				continue;
-				}
+			}
 
-			if (CURDIRSTAT.st_dev == statbuf.st_dev &&
-			    CURDIRSTAT.st_ino == statbuf.st_ino)
-				{
+			if (CURDIRSTAT.st_dev == statbuf.st_dev && CURDIRSTAT.st_ino == statbuf.st_ino) {
 				warns("(warning) current directory %s included in VPATH", vpath);
 				continue;
-				}
-
-			if (read_dir(vpath, addvsrctable, needsrc, needhdr) == NO)
-				return(NO);
 			}
+
+			if (read_dir(vpath, addvsrctable, needsrc, needhdr) == NO) return NO;
+		}
 
 		/*
 		 * convert hash table source file entries to
 		 * singly-linked source list
 		 */
-		if (hashtolist(SRCTABLE, SRCLIST) == NO)
-			{
+		if (hashtolist(SRCTABLE, SRCLIST) == NO) {
 			htrm(NULL, SRCTABLE);
-			return(NO);
-			}
+			return NO;
+		}
 		htrm(NULL, SRCTABLE);
-		}
-	else	{
-		if (read_dir(CURDIR, addsrclist, needsrc, needhdr) == NO)
-			return(NO);
-		}
-	return(YES);
+	} else {
+		if (read_dir(CURDIR, addsrclist, needsrc, needhdr) == NO) return NO;
+	}
+	return YES;
 }
 
 
@@ -152,10 +139,11 @@ int addsrclist(char *dirname, char *filename, int lswitch)
 // char *filename;			/* file name to add to source list */
 // int lswitch;			/* source/header list switch */
 {
-	if (lswitch == 's')
-		return((slappend(filename, SRCLIST) != NULL) ? YES : NO);
-	else
-		return((slappend(filename, HEADLIST) != NULL) ? YES : NO);
+	if (lswitch == 's') {
+		return (slappend(filename, SRCLIST) != NULL) ? YES : NO;
+	} else {
+		return (slappend(filename, HEADLIST) != NULL) ? YES : NO;
+	}
 }
 
 
@@ -170,23 +158,16 @@ addsrctable(char *dirname, char *filename, int tswitch)
 // char *filename;		/* file name to add to source table */
 // int tswitch;			/* source/header switch */
 {
-	if (tswitch == 's')
-		{
-		if (htlookup(filename, SRCTABLE) != NULL)
-			{
-			warn2("(warning) duplicate file %s/%s ignored",
-			      dirname, filename);
-			}
-		else	{
-			if (htinstall(filename, dirname, 0, SRCTABLE) == NULL)
-				return(NO);
-			}
-		}	  
-	else	{
-		if (slappend(filename, HEADLIST) == NULL)
-			return(NO);
+	if (tswitch == 's') {
+		if (htlookup(filename, SRCTABLE) != NULL) {
+			warn2("(warning) duplicate file %s/%s ignored", dirname, filename);
+		} else {
+			if (htinstall(filename, dirname, 0, SRCTABLE) == NULL) return NO;
 		}
-	return(YES);
+	} else {
+		if (slappend(filename, HEADLIST) == NULL) return NO;
+	}
+	return YES;
 }
 
 
@@ -203,19 +184,14 @@ addvsrctable(char *dirname, char *filename, int tswitch)
 {
 	HASH *table;			/* pointer to source/header file table */
 
-	if (tswitch == 's')
-		{
-		if (htlookup(filename, SRCTABLE) != NULL)
-			{
-			warn2("(warning) duplicate file %s/%s ignored",
-			      dirname, filename);
-			}
-		else	{
-			if (htinstall(filename, dirname, 0, SRCTABLE) == NULL)
-				return(NO);
-			}
+	if (tswitch == 's') {
+		if (htlookup(filename, SRCTABLE) != NULL) {
+			warn2("(warning) duplicate file %s/%s ignored", dirname, filename);
+		} else {
+			if (htinstall(filename, dirname, 0, SRCTABLE) == NULL) return NO;
 		}
-	return(YES);
+	}
+	return YES;
 }
 
 
@@ -233,18 +209,13 @@ hashtolist(HASH *table, SLIST *list)
 	char path[PATHSIZE];		/* path to foreign source file */
 
 	htrewind(table);
-	while (htnext(table))
-		{
-		if (htdef(table) == NULL || EQUAL(CURDIR, htdef(table)))
-			{		/* current directory */
-			if (slappend(htkey(table), list) == NULL)
-				return(NO);
-			}
-		else	{		/* VPATH directory */
+	while (htnext(table)) {
+		if (htdef(table) == NULL || EQUAL(CURDIR, htdef(table))) {		/* current directory */
+			if (slappend(htkey(table), list) == NULL) return NO;
+		} else {		/* VPATH directory */
 			pathcat(path, htdef(table), htkey(table));
-			if (slappend(path, list) == NULL)
-				return(NO);
-			}
+			if (slappend(path, list) == NULL) return NO;
 		}
-	return(YES);
+	}
+	return YES;
 }

@@ -1,5 +1,6 @@
 #ifndef _INCKEY_H_INCLUDED
 #define _INCKEY_H_INCLUDED
+
 /*
  * Copyright (c) 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -48,5 +49,5 @@
 "P",	INCLUDE_PASCAL,		/* Pascal */
 NULL,	INCLUDE_NONE		/* mandatory last line */
 
-#endif // _INCKEY_H_INCLUDED
+#endif /* _INCKEY_H_INCLUDED */
 

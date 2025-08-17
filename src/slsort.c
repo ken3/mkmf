@@ -63,24 +63,25 @@ int slsort(int (*compar)(const char*, const char*), SLIST *slist)
 	char **skp;			/* ptr to start of key ptr array */
 	SLBLK *curblk;			/* current list block */
 
-	if (slist->nk <= 0)
-		return(YES);
-	else if ((skp = (char **) malloc((unsigned)slist->nk*sizeof(char *))) == NULL)
-		{
+	if (slist->nk <= 0) {
+		return YES;
+	} else if ((skp = (char **) malloc((unsigned)slist->nk*sizeof(char *))) == NULL) {
 		nocore();
-		return(NO);
-		}
-	for (kp = skp, curblk = slist->head; curblk != NULL; kp++, curblk = curblk->next)
+		return NO;
+	}
+	for (kp = skp, curblk = slist->head; curblk != NULL; kp++, curblk = curblk->next) {
 		*kp = curblk->key;
+	}
 
 	sscmp = compar;
 	qsort((char *) skp, slist->nk, sizeof(char *), comparb);
 
-	for (kp = skp, curblk = slist->head; curblk != NULL; kp++, curblk = curblk->next)
+	for (kp = skp, curblk = slist->head; curblk != NULL; kp++, curblk = curblk->next) {
 		curblk->key = *kp;
+	}
 	
 	free((char *) skp);
-	return(YES);
+	return YES;
 }
 
 
@@ -96,5 +97,5 @@ comparb(const void *s1, const void *s2)
 {
 	char **a1 = (char **)s1;
 	char **a2 = (char **)s2;
-	return((*sscmp)(*a1, *a2));
+	return (*sscmp)(*a1, *a2);
 }

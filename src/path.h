@@ -1,3 +1,6 @@
+#ifndef _PATH_H_INCLUDED
+#define _PATH_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -40,8 +43,6 @@
  *
  * Author: Peter J. Nicklin
  */
-#ifndef PATH_H
-#define PATH_H
 
 /*
  * Buffer sizes
@@ -85,8 +86,7 @@
 /*
  * Pathname struct
  */
-typedef struct _path
-	{
+typedef struct _path {
 	unsigned long p_mode;		/* type of pathname */
 	char *p_alias;			/* pathname alias */
 	char *p_path;			/* pathname */
@@ -94,6 +94,7 @@ typedef struct _path
 	char *p_desc;			/* project directory description */
 	char p_buf[P_BUFSIZE];		/* pathname buffer */
 	char p_project[PATHSIZE];	/* pathname's project */
-	} PATH;
+} PATH;
 
-#endif /* PATH_H */
+#endif /* _PATH_H_INCLUDED */
+

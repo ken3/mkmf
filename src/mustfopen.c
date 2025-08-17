@@ -55,12 +55,10 @@ mustfopen(char *filename, char *mode)
 {
 	FILE *stream;			/* file stream */
 
-	if ((stream = fopen(filename,mode)) == NULL)
-		{
-		if (*PGN != '\0')
-			fprintf(stderr, "%s: ", PGN);
+	if ((stream = fopen(filename,mode)) == NULL) {
+		if (*PGN != '\0') fprintf(stderr, "%s: ", PGN);
 		fprintf(stderr, "can't open %s\n",filename);
 		exit(1);
-		}
-	return(stream);
+	}
+	return stream;
 }

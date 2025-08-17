@@ -80,85 +80,60 @@ editmf(char *mfname, char *mfpath)
 	ifp = mustfopen(mfpath, "r");
 	mkstemp(Mftemp);
 
-	if (signal(SIGINT, SIG_IGN) != SIG_IGN)
-		{
+	if (signal(SIGINT, SIG_IGN) != SIG_IGN) {
 		signal(SIGINT,  cleanup);
 		signal(SIGHUP,  cleanup);
 		signal(SIGQUIT, cleanup);
-		}
+	}
 
 	ofp = mustfopen(Mftemp, "w");
-	if (DEPEND)
-		{
+	if (DEPEND) {
 		dlp = mkdepend();
-		}
+	}
 
-	while (getlin(ifp) != NULL)
-		{
-		if (DEPEND && EQUAL(IOBUF, DEPENDMARK))
-			break;
-		if (findmacro(mnam, IOBUF) != NULL)
-			{
-			if (EQUAL(mnam, MHEADERS))
-				{
+	while (getlin(ifp) != NULL) {
+		if (DEPEND && EQUAL(IOBUF, DEPENDMARK)) break;
+		if (findmacro(mnam, IOBUF) != NULL) {
+			if (EQUAL(mnam, MHEADERS)) {
 				putslmacro(HEADLIST, ofp);
 				purgcontinue(ifp);
-				}
-			else if (EQUAL(mnam, MOBJECTS))
-				{
+			} else if (EQUAL(mnam, MOBJECTS)) {
 				putobjmacro(ofp);
 				purgcontinue(ifp);
-				}
-			else if (EQUAL(mnam, MSOURCES))
-				{
+			} else if (EQUAL(mnam, MSOURCES)) {
 				putslmacro(SRCLIST, ofp);
 				purgcontinue(ifp);
-				}
-			else if (EQUAL(mnam, MSYSHDRS))
-				{
+			} else if (EQUAL(mnam, MSYSHDRS)) {
 				putslmacro(SYSLIST, ofp);
 				purgcontinue(ifp);
-				}
-			else if (EQUAL(mnam, MEXTERNALS))
-				{
-				if (DEPEND)
-					{
+			} else if (EQUAL(mnam, MEXTERNALS)) {
+				if (DEPEND) {
 					putslmacro(EXTLIST, ofp);
 					purgcontinue(ifp);
-					}
-				else	{
+				} else {
 					putlin(ofp);
-					}
 				}
-			else if (EQUAL(mnam, MLIBLIST) && LIBLIST != NULL)
-				{
+			} else if (EQUAL(mnam, MLIBLIST) && LIBLIST != NULL) {
 				putslmacro(LIBLIST, ofp);
 				purgcontinue(ifp);
-				}
-			else if ((htb = htlookup(mnam, MDEFTABLE)) != NULL)
-				{
-				if (htb->h_val == VREADWRITE)
-					{
+			} else if ((htb = htlookup(mnam, MDEFTABLE)) != NULL) {
+				if (htb->h_val == VREADWRITE) {
 					putmacro(htb->h_def, ofp);
 					purgcontinue(ifp);
-					}
-				else	{
+				} else {
 					putlin(ofp);
-					}
 				}
-			else	{
+			} else {
 				putlin(ofp);
-				}
 			}
-		else	{
+		} else {
 			putlin(ofp);
-			}
 		}
+	}
 	fclose(ifp);
-	if (DEPEND)
-		{
+	if (DEPEND) {
 		dlprint(dlp, ofp);
-		}
+	}
 	fclose(ofp);
 
 	signal(SIGINT, SIG_IGN);
@@ -166,6 +141,7 @@ editmf(char *mfname, char *mfpath)
 	signal(SIGQUIT, SIG_IGN);
 
 	RENAME(Mftemp, mfname);
+	return;
 }
 
 
@@ -182,5 +158,5 @@ cleanup(int num)
 	signal(SIGQUIT, cleanup);
 
 	unlink(Mftemp);
-	exit(1);
+	_exit(1);
 }

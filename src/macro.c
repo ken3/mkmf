@@ -46,6 +46,7 @@
 #include "null.h"
 #include "slist.h"
 #include "stringx.h"
+#include "suffix.h"
 #include "yesno.h"
 
 extern char IOBUF[];		/* I/O buffer line */
@@ -68,32 +69,25 @@ findmacro(char *macroname, char *bp)
 {
 	char *mp;		/* macro name pointer */
 
-	while (WHITESPACE(*bp))
-		bp++;
+	while (WHITESPACE(*bp)) bp++;
 
-	for (mp = macroname; *bp && *bp != '='; bp++, mp++)
-		{
-		if (WHITESPACE(*bp))
-			{
+	for (mp = macroname; *bp && *bp != '='; bp++, mp++) {
+		if (WHITESPACE(*bp)) {
 			break;
-			}
-		else if ((*bp == '+' ||
-			  *bp == '?' ||
-			  *bp == ':' ||
-			  *bp == '!') && bp[1] == '=')
-			{
+		} else if ((*bp == '+' ||
+			    *bp == '?' ||
+			    *bp == ':' ||
+			    *bp == '!') && bp[1] == '=') {
 			break;
-			}
-		*mp = *bp;
 		}
+		*mp = *bp;
+	}
 
 	*mp = '\0';
 
-	while (WHITESPACE(*bp))
-		bp++;
+	while (WHITESPACE(*bp)) bp++;
 
-	if (*bp == '+' || *bp == '?' || *bp == ':' || *bp == '!')
-		bp++;
+	if (*bp == '+' || *bp == '?' || *bp == ':' || *bp == '!') bp++;
 
 	return (*bp == '=' && mp > macroname) ? macroname : NULL;
 }
@@ -115,23 +109,17 @@ getmacro(char *mdefbuf, FILE *stream)
 
 	bp = IOBUF;
 	mp = mdefbuf;
-	while (*bp++ != '=')
-		continue;
-	if (WHITESPACE(*bp))
-		bp++;
-	while (*bp != '\0')
-		*mp++ = *bp++;
-	while (CONTINUE == YES)
-		{
+	while (*bp++ != '=') continue;
+	if (WHITESPACE(*bp)) bp++;
+	while (*bp != '\0') *mp++ = *bp++;
+	while (CONTINUE == YES) {
 		*mp++ = ' ';
-		if (getlin(stream) == NULL)
-			break;
+		if (getlin(stream) == NULL) break;
 		bp = IOBUF;
-		while (*bp != '\0')
-			*mp++ = *bp++;
-		}
+		while (*bp != '\0') *mp++ = *bp++;
+	}
 	*mp = '\0';
-	return(mdefbuf);
+	return (mdefbuf);
 }
 
 
@@ -148,9 +136,9 @@ putmacro(char *macrovalue, FILE *stream)
 	int c;			/* current character */
 
 	iop = IOBUF;
-	while ((c = *iop++) != '=')
-		putc(c, stream);
+	while ((c = *iop++) != '=') putc(c, stream);
 	fprintf(stream, "= %s\n", macrovalue);
+	return;
 }
 
 
@@ -170,28 +158,24 @@ putobjmacro(FILE *stream)
 	SLBLK *lbp;			/* list block pointer */
 
 	iop = IOBUF;
-	while ((c = *iop++) != '=')
-		putc(c, stream);
+	while ((c = *iop++) != '=') putc(c, stream);
 	putc('=', stream);
-	for (lbp = SRCLIST->head; lbp != NULL; lbp = lbp->next)
-		{
+	for (lbp = SRCLIST->head; lbp != NULL; lbp = lbp->next) {
 		suffix = strrchr(lbp->key, '.');
 		type = lookuptypeofinclude(++suffix);
-		if (lookupinclude(lbp->key, type) == NULL)
-			{
+		if (lookupinclude(lbp->key, type) == NULL) {
 			cnt += 1;
-			if (cnt == 1)
-				{
+			if (cnt == 1) {
 				putc(' ', stream);
 				putobj(lbp->key, stream);
-				}
-			else	{
+			} else {
 				fprintf(stream, " \\\n\t\t");
 				putobj(lbp->key, stream);
-				}
 			}
 		}
+	}
 	putc('\n', stream);
+	return;
 }
 
 
@@ -209,18 +193,19 @@ putslmacro(SLIST *slist, FILE *stream)
 	SLBLK *lbp;			/* list block pointer */
 
 	iop = IOBUF;
-	while ((c = *iop++) != '=')
-		putc(c, stream);
+	while ((c = *iop++) != '=') putc(c, stream);
 	putc('=', stream);
-	if (SLNUM(slist) > 0)
-		{
+	if (SLNUM(slist) > 0) {
 		lbp = slist->head;
 		fprintf(stream, " %s", lbp->key);
-		}
-	if (SLNUM(slist) > 1)
-		for (lbp = lbp->next; lbp != NULL; lbp = lbp->next)
+	}
+	if (SLNUM(slist) > 1) {
+		for (lbp = lbp->next; lbp != NULL; lbp = lbp->next) {
 			fprintf(stream, " \\\n\t\t%s", lbp->key);
+		}
+	}
 	putc('\n', stream);
+	return;
 }
 
 
@@ -236,22 +221,20 @@ int storemacro(char *macdef)
 	int i;			/* macro value index */
 	int j;			/* macro name index */
 
-	for (i = 0; macdef[i] != '='; i++)
-		if (macdef[i] == '\0')
-			return(NO);
+	for (i = 0; macdef[i] != '='; i++) {
+		if (macdef[i] == '\0') return NO;
+	}
 	
 	/* removing trailing blanks and tabs from end of macro name */
-	for (j = i; j > 0; j--)
-		if (!WHITESPACE(macdef[j-1]))
-			break;
+	for (j = i; j > 0; j--) {
+		if (!WHITESPACE(macdef[j-1])) break;
+	}
 	macdef[j] = '\0';
 
 	/* remove leading blanks and tabs from macro value */
-	for (i++; WHITESPACE(macdef[i]); i++)
-		continue;
-	if (htinstall(macdef, macdef+i, VREADWRITE, MDEFTABLE) == NULL)
-		exit(1);
-	return(YES);
+	for (i++; WHITESPACE(macdef[i]); i++) continue;
+	if (htinstall(macdef, macdef+i, VREADWRITE, MDEFTABLE) == NULL) exit(1);
+	return YES;
 }
 
 
@@ -268,26 +251,21 @@ int storenvmacro(void)
 	int i;			/* macro name index */
 	char macroname[MACRONAMSIZE];	/* macro name buffer */
 
-	if (environ)
-		for (ep = environ; *ep != NULL; ep++)
-			{
+	if (environ) {
+		for (ep = environ; *ep != NULL; ep++) {
 			value = *ep;
-			for (i = 0; *value && *value != '='; i++, value++)
-				macroname[i] = *value;
-			if (*value == '=')
-				{
+			for (i = 0; *value && *value != '='; i++, value++) macroname[i] = *value;
+			if (*value == '=') {
 				macroname[i] = '\0';
 				value++;
-				}
-
-			if (htlookup(macroname, MDEFTABLE) != NULL)
-				continue;
-
-			if (htinstall(macroname, value,
-				      VREADONLY, MDEFTABLE) == NULL)
-				return(NO);
 			}
-	return(YES);
+
+			if (htlookup(macroname, MDEFTABLE) != NULL) continue;
+
+			if (htinstall(macroname, value, VREADONLY, MDEFTABLE) == NULL) return NO;
+		}
+	}
+	return YES;
 }
 
 
@@ -300,20 +278,20 @@ int storenvmacro(void)
  */
 int storedynmacro(void)
 {
-	if (htlookup(MHEADERS, MDEFTABLE) == NULL)
-		if (htinstall(MHEADERS, "", VDYNAMIC, MDEFTABLE) == NULL)
-			return(NO);
+	if (htlookup(MHEADERS, MDEFTABLE) == NULL) {
+		if (htinstall(MHEADERS, "", VDYNAMIC, MDEFTABLE) == NULL) return NO;
+	}
 
-	if (htlookup(MOBJECTS, MDEFTABLE) == NULL)
-		if (htinstall(MOBJECTS, "", VDYNAMIC, MDEFTABLE) == NULL)
-			return(NO);
+	if (htlookup(MOBJECTS, MDEFTABLE) == NULL) {
+		if (htinstall(MOBJECTS, "", VDYNAMIC, MDEFTABLE) == NULL) return NO;
+	}
 
-	if (htlookup(MSOURCES, MDEFTABLE) == NULL)
-		if (htinstall(MSOURCES, "", VDYNAMIC, MDEFTABLE) == NULL)
-			return(NO);
+	if (htlookup(MSOURCES, MDEFTABLE) == NULL) {
+		if (htinstall(MSOURCES, "", VDYNAMIC, MDEFTABLE) == NULL) return NO;
+	}
 
-	if (htlookup(MEXTERNALS, MDEFTABLE) == NULL)
-		if (htinstall(MEXTERNALS, "", VDYNAMIC, MDEFTABLE) == NULL)
-			return(NO);
-	return(YES);
+	if (htlookup(MEXTERNALS, MDEFTABLE) == NULL) {
+		if (htinstall(MEXTERNALS, "", VDYNAMIC, MDEFTABLE) == NULL) return NO;
+	}
+	return YES;
 }

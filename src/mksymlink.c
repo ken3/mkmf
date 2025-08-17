@@ -99,74 +99,62 @@ int mksymlink(int needsrc, int needhdr)
 	char vpath[PATHSIZE];		/* virtual directory path buffer */
 	struct stat statbuf;		/* virtual path stat buffer */
 
-	if ((HDRTABLE = htinit(SOURCETABLESIZE)) == NULL)
-		return(NO);
-	if ((SRCTABLE = htinit(SOURCETABLESIZE)) == NULL)
-		return(NO);
+	if ((HDRTABLE = htinit(SOURCETABLESIZE)) == NULL) return NO;
+	if ((SRCTABLE = htinit(SOURCETABLESIZE)) == NULL) return NO;
 
-	if (stat(CURDIR, &CURDIRSTAT) < 0)
-		{
+	if (stat(CURDIR, &CURDIRSTAT) < 0) {
 		pperror(CURDIR);
-		return(NO);
-		}
+		return NO;
+	}
 
-	if (read_dir(CURDIR, addsrctable, needsrc, needhdr) == NO)
-		return(NO);
+	if (read_dir(CURDIR, addsrctable, needsrc, needhdr) == NO) return NO;
 
 	/*
 	 * merge source/header files in other directories into hash table
 	 * source list
 	 */
-	if (htlookup(MVPATH, MDEFTABLE) != NULL)
-		{
+	if (htlookup(MVPATH, MDEFTABLE) != NULL) {
 		vp = htdef(MDEFTABLE);		
-		while ((vp = getpath(vpath, vp)) != NULL)
-			{
-			if (stat(vpath, &statbuf) < 0)
-				{
+		while ((vp = getpath(vpath, vp)) != NULL) {
+			if (stat(vpath, &statbuf) < 0) {
 				pperror(vpath);
 				continue;
-				}
+			}
 
-			if (!S_ISDIR(statbuf.st_mode))
-				{
+			if (!S_ISDIR(statbuf.st_mode)) {
 				warns("(warning) %s in VPATH not a directory", vpath);
 				continue;
-				}
+			}
 
 			if (CURDIRSTAT.st_dev == statbuf.st_dev &&
-			    CURDIRSTAT.st_ino == statbuf.st_ino)
-				{
+			    CURDIRSTAT.st_ino == statbuf.st_ino) {
 				warns("(warning) current directory %s included in VPATH", vpath);
 				continue;
-				}
-
-			if (read_dir(vpath, addvsrctable, needsrc, needhdr) == NO)
-				return(NO);
 			}
+
+			if (read_dir(vpath, addvsrctable, needsrc, needhdr) == NO) return NO;
 		}
+	}
 
 	/*
 	 * convert hash table source file entries to singly-linked source list
 	 */
-	if (hashtolist(SRCTABLE, SRCLIST) == NO)
-		{
+	if (hashtolist(SRCTABLE, SRCLIST) == NO) {
 		htrm(NULL, SRCTABLE);
-		return(NO);
-		}
+		return NO;
+	}
 	htrm(NULL, SRCTABLE);
 
 	/*
 	 * convert hash table header file entries to singly-linked header list
 	 */
-	if (hashtolist(HDRTABLE, HEADLIST) == NO)
-		{
+	if (hashtolist(HDRTABLE, HEADLIST) == NO) {
 		htrm(NULL, HDRTABLE);
-		return(NO);
-		}
+		return NO;
+	}
 	htrm(NULL, HDRTABLE);
 
-	return(YES);
+	return YES;
 }
 
 
@@ -186,26 +174,21 @@ addsrctable(char *dirname, char *filename, int tswitch)
 if (readlink(filename, symbuf, PATHSIZE) < 0)
 		{
 #ifdef _HasEnxioReadlinkReturn		/* ugly hack around apollo bug */
-		if (errno == EINVAL || errno == ENXIO)
+		if (errno == EINVAL || errno == ENXIO) {
 #else
-                if (errno == EINVAL)
+                if (errno == EINVAL) {
 #endif
-			{
-			if (htinstall(filename, NULL, NOT_SYMLINK,
-			   (tswitch == 's') ? SRCTABLE : HDRTABLE) == NULL)
-				return(NO);
-			}
-		else	{
+			if (htinstall(filename, NULL, NOT_SYMLINK, (tswitch == 's') ? SRCTABLE : HDRTABLE) == NULL)
+				return NO;
+		} else {
 			pperror(filename);
-			return(NO);
-			}
+			return NO;
 		}
-	else	{
-		if (htinstall(filename, pathhead(symbuf), UNV_SYMLINK,
-		   (tswitch == 's') ? SRCTABLE : HDRTABLE) == NULL)
-			return(NO);
-		}
-	return(YES);
+	} else {
+		if (htinstall(filename, pathhead(symbuf), UNV_SYMLINK, (tswitch == 's') ? SRCTABLE : HDRTABLE) == NULL)
+			return NO;
+	}
+	return YES;
 }
 
 
@@ -227,45 +210,34 @@ addvsrctable(char *dirname, char *filename, int tswitch)
 	HASH *table;			/* pointer to source/header file table */
 
 	table = (tswitch == 's') ? SRCTABLE : HDRTABLE;
-	if (htlookup(filename, table) != NULL)
-		{
-		if (htval(table) == UNV_SYMLINK)
-			{
-			if (!EQUAL(dirname, htdef(table)))
-				{	/* link file from dirname */
-				if(unlink(filename) < 0)
-					{
+	if (htlookup(filename, table) != NULL) {
+		if (htval(table) == UNV_SYMLINK) {
+			if (!EQUAL(dirname, htdef(table))) {	/* link file from dirname */
+				if(unlink(filename) < 0) {
 					warns("(error) failed to remove symbolic link %s", filename);
-					return(NO);
-					}
-				else if (symlink(pathcat(path, dirname, filename), filename) < 0)
-					{
+					return NO;
+				} else if (symlink(pathcat(path, dirname, filename), filename) < 0) {
 					pperror(filename);
-					return(NO);
-					}
-				else	{
+					return NO;
+				} else {
 					char oldpath[PATHSIZE];	/* extra pathname buffer */
 					pathcat(oldpath, htdef(table), filename);
 					warn2("(warning) symbolic link %s replaced by %s", oldpath, path);
-					}
 				}
+			}
 			htval(table) = VER_SYMLINK;
-			}
-		else	{
+		} else {
 			warn2("(warning) duplicate file %s/%s ignored", htdef(table), filename);
-			}
 		}
-	else	{
-		if (htinstall(filename, NULL, VER_SYMLINK, table) == NULL)
-			return(NO);
+	} else {
+		if (htinstall(filename, NULL, VER_SYMLINK, table) == NULL) return NO;
 		pathcat(path, dirname, filename);
-		if (symlink(path, filename) < 0)
-			{
+		if (symlink(path, filename) < 0) {
 			pperror(filename);
-			return(NO);
-			}
+			return NO;
 		}
-	return(YES);
+	}
+	return YES;
 }
 
 
@@ -282,29 +254,21 @@ hashtolist(HASH *table, SLIST *list)
 // SLIST *list;			/* pointer to list head block */
 {
 	htrewind(table);
-	while (htnext(table))
-		{
-		if (htval(table) == UNV_SYMLINK)
-			{
-			if (MKSYMLINK > 1 || !FILEXIST(htkey(table)))
-				{
-				if(unlink(htkey(table)) < 0)
-					{
+	while (htnext(table)) {
+		if (htval(table) == UNV_SYMLINK) {
+			if (MKSYMLINK > 1 || !FILEXIST(htkey(table))) {
+				if(unlink(htkey(table)) < 0) {
 					warns("Failed to remove symbolic link %s", htkey(table));
-					}
 				}
-			else	{
+			} else {
 				warns("%s linked to directory not in VPATH", htkey(table));
-				if (slappend(htkey(table), list) == NULL)
-					return(NO);
-				}
+				if (slappend(htkey(table), list) == NULL) return NO;
 			}
-		else 	{
-			if (slappend(htkey(table), list) == NULL)
-				return(NO);
-			}
+		} else {
+			if (slappend(htkey(table), list) == NULL) return NO;
 		}
-	return(YES);
+	}
+	return YES;
 }
 
 #else
@@ -317,7 +281,7 @@ int mksymlink(int needsrc, int needhdr)
 // int needhdr;			/* need header file names */
 {
 	warn("symbolic links not available");
-	return(NO);
+	return NO;
 }
 
 #endif /* _HasSymLinks */

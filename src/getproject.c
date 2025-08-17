@@ -54,6 +54,6 @@ getproject(void)
 {
 	char *pv;		/* ptr to start of PROJECT variable */
 
-	if ((pv = getenv("PROJECT")) != NULL && *pv != '\0')
-		_PROJECT = strsav(pv);
+	if ((pv = getenv("PROJECT")) != NULL && *pv != '\0') _PROJECT = strsav(pv);
+	return;
 }

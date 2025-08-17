@@ -1,3 +1,6 @@
+#ifndef _STRINGX_H_INCLUDED
+#define _STRINGX_H_INCLUDED
+
 /*
  * Copyright (c) 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -40,8 +43,6 @@
  *
  * Author: Peter J. Nicklin
  */
-#ifndef STRINGX_H
-#define STRINGX_H
 
 #include "config.h"
 
@@ -69,4 +70,5 @@
 #  endif
 #endif
 
-#endif /* STRINGX_H */
+#endif /* _STRINGX_H_INCLUDED */
+

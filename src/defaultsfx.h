@@ -1,5 +1,6 @@
 #ifndef _DEFAULTSFX_H_INCLUDED
 #define _DEFAULTSFX_H_INCLUDED
+
 /*
  * Copyright (c) 1983, 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -63,5 +64,5 @@
 ".y",   SFXSRC,  INCLUDE_C,	  "C",	 /* Yacc */
 NULL,   SFXNULL, INCLUDE_NONE,	   NULL	 /* mandatory last line */
 
-#endif // _DEFAULTSFX_H_INCLUDED
+#endif /* _DEFAULTSFX_H_INCLUDED */
 

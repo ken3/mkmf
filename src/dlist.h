@@ -1,5 +1,6 @@
 #ifndef _DLIST_H_INCLUDED
 #define _DLIST_H_INCLUDED
+
 /*
  * Copyright (c) 1985, 1991 Peter J. Nicklin.
  * Copyright (c) 1991 Version Technology.
@@ -43,30 +44,33 @@
  * Author: Peter J. Nicklin
  */
 
+#include "hash.h"
+#include "slist.h"
+
 /*
  * Dependency list block
  */
-typedef struct _dlblk
-	{
+typedef struct _dlblk {
 	int d_type;			/* source file type */
 	struct slblk *d_src;		/* points to a source list block */
 	struct _iblk *d_incl;		/* pointer to include block chain */
 	struct _dlblk *d_next;		/* ptr to next list block */
-	} DLBLK;
+} DLBLK;
+
 /*
  * Dependency list head block
  */
-typedef struct _dlisthb
-	{
+typedef struct _dlisthb {
 	DLBLK *d_head;			/* pointer to first list block */
 	DLBLK *d_tail;			/* pointer to last list block */
-	} DLIST;
+} DLIST;
+
 /*
  * Functions defined for dependency list operations
  */
-extern DLBLK *dlappend(int srctyp, SLBLK *srcblk, INCBLK *incblk, DLIST *dlist); /* append to list */
-extern DLIST *dlinit(void);			/* initialize list */
-extern void dlprint(DLIST *dlist, FILE *ofp);	/* print list */
+DLBLK* dlappend(int, SLBLK*, INCBLK*, DLIST*); /* append to list */
+DLIST* dlinit(void);			       /* initialize list */
+void   dlprint(DLIST*, FILE*);	               /* print list */
 
-#endif // _DLIST_H_INCLUDED
+#endif /* _DLIST_H_INCLUDED */
 

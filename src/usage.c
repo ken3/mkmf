@@ -52,8 +52,7 @@ void usage(char *m)
 // char *m;			/* usage error message */
 {
 	fprintf(stderr, "usage: ");
-	if (PGN != NULL && *PGN != '\0')
-		fprintf(stderr, "%s ", PGN);
+	if (PGN != NULL && *PGN != '\0') fprintf(stderr, "%s ", PGN);
 	fprintf(stderr, "%s\n", m);
 	return;
 }
