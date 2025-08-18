@@ -61,7 +61,49 @@ extern HASH *MDEFTABLE;		/* macro definition table */
 
 static char Mftemp[] = "mkmfXXXXXX";		/* temporary makefile */
 
-void cleanup(int);
+/*
+ * cleanup() removes the temporary makefile and dependency file, and
+ * calls exit(1).
+ */
+void
+cleanup(int num)
+// int num;			/* received signal number */
+{
+	unlink(Mftemp);
+	_exit(1);
+}
+
+/* change signal handler */
+static void set_signal_handlers(void (*handler)(int))
+// void (*handler)(int);			/* signal handler */
+{
+	signal(SIGINT,  handler);
+	signal(SIGHUP,  handler);
+	signal(SIGQUIT, handler);
+}
+
+/* macro entry table */
+typedef struct {
+	const char *name;
+	SLIST **list;
+	int require_depend;
+	void (*special_handler)(FILE *ofp);
+} macro_entry_t;
+
+/* Find macro entry by name in macro table */
+static macro_entry_t* find_macro_entry(const char *name, macro_entry_t *table)
+// const char *name;			/* macro name to find */
+// macro_entry_t *table;		/* macro entry table */
+{
+	for (macro_entry_t *entry = table; entry->name != NULL; entry++) {
+		if (EQUAL(name, entry->name)) return entry;
+	}
+	return NULL;
+}
+
+static void handle_objmacro(FILE *ofp) {
+	putobjmacro(ofp);
+}
 
 /*
  * editmf() replaces macro definitions within a makefile.
@@ -76,87 +118,57 @@ editmf(char *mfname, char *mfpath)
 	FILE *ifp;			/* input stream */
 	FILE *ofp;			/* output stream */
 	HASHBLK *htb;			/* hash table block */
+	macro_entry_t *entry;
+	macro_entry_t macro_table[] = {
+		{ MHEADERS,   &HEADLIST,   0, NULL },
+		{ MOBJECTS,   NULL,        0, handle_objmacro },
+		{ MSOURCES,   &SRCLIST,    0, NULL },
+		{ MSYSHDRS,   &SYSLIST,    0, NULL },
+		{ MEXTERNALS, &EXTLIST,    1, NULL },
+		{ MLIBLIST,   &LIBLIST,    0, NULL },
+		{ NULL,       NULL,        0, NULL }
+	};
 
-	ifp = mustfopen(mfpath, "r");
+	set_signal_handlers(cleanup);
+
 	mkstemp(Mftemp);
-
-	if (signal(SIGINT, SIG_IGN) != SIG_IGN) {
-		signal(SIGINT,  cleanup);
-		signal(SIGHUP,  cleanup);
-		signal(SIGQUIT, cleanup);
-	}
-
 	ofp = mustfopen(Mftemp, "w");
-	if (DEPEND) {
-		dlp = mkdepend();
-	}
+	ifp = mustfopen(mfpath, "r");
+	if (DEPEND) dlp = mkdepend();
 
 	while (getlin(ifp) != NULL) {
 		if (DEPEND && EQUAL(IOBUF, DEPENDMARK)) break;
 		if (findmacro(mnam, IOBUF) != NULL) {
-			if (EQUAL(mnam, MHEADERS)) {
-				putslmacro(HEADLIST, ofp);
-				purgcontinue(ifp);
-			} else if (EQUAL(mnam, MOBJECTS)) {
-				putobjmacro(ofp);
-				purgcontinue(ifp);
-			} else if (EQUAL(mnam, MSOURCES)) {
-				putslmacro(SRCLIST, ofp);
-				purgcontinue(ifp);
-			} else if (EQUAL(mnam, MSYSHDRS)) {
-				putslmacro(SYSLIST, ofp);
-				purgcontinue(ifp);
-			} else if (EQUAL(mnam, MEXTERNALS)) {
-				if (DEPEND) {
-					putslmacro(EXTLIST, ofp);
-					purgcontinue(ifp);
-				} else {
+			entry = find_macro_entry(mnam, macro_table);
+			if (entry) {
+				if (entry->require_depend && !DEPEND) {
 					putlin(ofp);
+				} else if (entry->special_handler) {
+					entry->special_handler(ofp);
+				} else {
+					putslmacro(*(entry->list), ofp);
 				}
-			} else if (EQUAL(mnam, MLIBLIST) && LIBLIST != NULL) {
-				putslmacro(LIBLIST, ofp);
 				purgcontinue(ifp);
-			} else if ((htb = htlookup(mnam, MDEFTABLE)) != NULL) {
-				if (htb->h_val == VREADWRITE) {
+			} else {
+				htb = htlookup(mnam, MDEFTABLE);
+				if (htb && htb->h_val == VREADWRITE) {
 					putmacro(htb->h_def, ofp);
 					purgcontinue(ifp);
 				} else {
 					putlin(ofp);
 				}
-			} else {
-				putlin(ofp);
 			}
 		} else {
 			putlin(ofp);
 		}
 	}
+
+	if (DEPEND) dlprint(dlp, ofp);
 	fclose(ifp);
-	if (DEPEND) {
-		dlprint(dlp, ofp);
-	}
 	fclose(ofp);
 
-	signal(SIGINT, SIG_IGN);
-	signal(SIGHUP, SIG_IGN);
-	signal(SIGQUIT, SIG_IGN);
-
 	RENAME(Mftemp, mfname);
+	set_signal_handlers(SIG_IGN);
+
 	return;
-}
-
-
-
-/*
- * cleanup() removes the temporary makefile and dependency file, and
- * calls exit(1).
- */
-void
-cleanup(int num)
-{
-	signal(SIGINT,  cleanup);
-	signal(SIGHUP,  cleanup);
-	signal(SIGQUIT, cleanup);
-
-	unlink(Mftemp);
-	_exit(1);
 }
